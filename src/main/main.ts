@@ -25,10 +25,8 @@ async function bootstrap() {
   await app.startAllMicroservices();
 
   app.useGlobalPipes(new ValidationPipe());
-  app.enableShutdownHooks();
 
   const port = config["server"]["port"] || 3000;
-
   await app.listen(port, () => {
     logger.log(`Server listening on port ${port}`, "NestApplication");
   });

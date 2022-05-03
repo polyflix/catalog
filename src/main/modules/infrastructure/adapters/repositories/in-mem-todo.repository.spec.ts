@@ -14,11 +14,11 @@ describe("InMemTodoRepository", () => {
   });
 
   describe("findOne", () => {
-    it("should find the todo by id", () => {
+    it("should find the video by id", () => {
       const expected = repository
         .save(
           Todo.create({
-            title: "My super todo",
+            title: "My super video",
             description: "flemme"
           })
         )
