@@ -1,6 +1,7 @@
-import { RequestMethod, ValidationPipe } from "@nestjs/common";
+import { RequestMethod, ValidationPipe, VersioningType } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
+import { kafkaConfig } from "./config/kafka.config";
 import { loadConfiguration } from "./config/loader.config";
 import { logger } from "./config/logger.config";
 import { configureOTel } from "./config/tracing.config";
@@ -11,7 +12,7 @@ async function bootstrap() {
 
   // Must be started before NestFactory
   const telemetry = configureOTel(config, logger);
-  telemetry.start();
+  await telemetry.start();
 
   // Gracefully shutdown OTel data, it ensures that all data
   // has been dispatched before shutting down the server
@@ -23,17 +24,20 @@ async function bootstrap() {
     logger
   });
 
-  await app.startAllMicroservices();
+  app.enableVersioning({
+    type: VersioningType.URI,
+    defaultVersion: "2.0.0"
+  });
 
   app.useGlobalPipes(new ValidationPipe());
-  app.setGlobalPrefix("/api/v2", {
+  app.setGlobalPrefix("/api/", {
     exclude: [{ path: "health", method: RequestMethod.GET }]
   });
 
   const configOpenApi = new DocumentBuilder()
-    .setTitle("Polyflix API")
-    .setDescription("Polyflix API OpenAPI document.")
-    .setVersion("1.0")
+    .setTitle("Polyflix Catalog service API")
+    .setDescription("Polyflix Catalog service API OpenAPI document.")
+    .setVersion("2.0.0")
     .addBearerAuth()
     .build();
 
@@ -42,11 +46,14 @@ async function bootstrap() {
       return `${controllerKey.toLowerCase()}-${methodKey.toLowerCase()}`;
     }
   });
-  SwaggerModule.setup("api/v[1-2]/docs", app, document, {
-    customSiteTitle: "Polyflix API"
+  SwaggerModule.setup("catalog/docs", app, document, {
+    customSiteTitle: "Polyflix Catalog service API"
   });
 
   const port = config["server"]["port"] || 3000;
+  app.connectMicroservice(kafkaConfig(config["kafka"]));
+  await app.startAllMicroservices();
+
   await app.listen(port, () => {
     logger.log(`Server listening on port ${port}`, "NestApplication");
   });
