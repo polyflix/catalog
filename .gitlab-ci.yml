@@ -11,6 +11,9 @@ include:
     file: '/templates/nodejs.yml'
     ref: main
   - project: 'polyflix-do/ci-templates'
+    file: '/jobs/nestjs/package.migrations.yml'
+    ref: main
+  - project: 'polyflix-do/ci-templates'
     file: '/jobs/nestjs/package.yml'
     ref: main
   - project: 'polyflix-do/ci-templates'
