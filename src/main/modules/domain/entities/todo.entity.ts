@@ -25,12 +25,12 @@ export class Todo {
 
   validate(): boolean {
     // Here add some logic to validate the domain entity is valid
-    // A todo is valid only if the title is not empty and the todo is not completed at the creation
+    // A video is valid only if the title is not empty and the video is not completed at the creation
     return this.getTitle() !== "" && !!this.getTitle() && !this.isCompleted();
   }
 
   /**
-   * Complete the todo.
+   * Complete the video.
    */
   complete() {
     if (this.completed) {

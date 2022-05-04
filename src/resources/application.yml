@@ -12,3 +12,14 @@ kafka:
   consumer:
     groupId: todo-consumer
     allowAutoTopicCreation: true
+
+database:
+  psql:
+    # In case you want to use an URL instead
+    # url: postgres://sa_catalog:sa_catalog_pwd@localhost:5433/catalog
+    host: localhost
+    port: 5433
+    username: sa_catalog
+    password: sa_catalog_pwd
+    database: catalog
+    debug: true

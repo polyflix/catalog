@@ -1,17 +1,17 @@
 import { Controller, Get, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { Transport } from "@nestjs/microservices";
 import {
   HealthCheck,
   HealthCheckService,
-  HttpHealthIndicator,
-  MicroserviceHealthIndicator
+  HttpHealthIndicator
 } from "@nestjs/terminus";
+import { ApiTags } from "@nestjs/swagger";
 
 /**
  * Export service readiness/liveness
  * More info: https://docs.nestjs.com/recipes/terminus
  */
+@ApiTags("HealthCheck")
 @Controller("health")
 export class HealthController {
   private readonly logger = new Logger(HealthController.name);

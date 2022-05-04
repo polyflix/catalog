@@ -22,8 +22,8 @@ export const configureOTel = (
   logger: LoggerService
 ) => {
   const otelConfig = {
-    port: config["telemetry"]["port"] || 4317,
-    endpoint: config["telemetry"]["host"] || "localhost"
+    port: config["telemetry"]["port"],
+    endpoint: config["telemetry"]["host"]
   };
   const traceEndpoint = `${otelConfig.endpoint}:${otelConfig.port}`;
 
@@ -34,7 +34,7 @@ export const configureOTel = (
 
   return new NodeSDK({
     resource: new Resource({
-      [SemanticResourceAttributes.SERVICE_NAME]: "boilerplate",
+      [SemanticResourceAttributes.SERVICE_NAME]: "catalog",
       [SemanticResourceAttributes.TELEMETRY_SDK_LANGUAGE]:
         TelemetrySdkLanguageValues.NODEJS
     }),

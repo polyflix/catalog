@@ -64,7 +64,10 @@ export const loadConfiguration = (logger: LoggerService) => {
   // application.yml
   // application.${ENVIRONMENT}.yml
   defaultConfigurationFiles.forEach((file) => {
-    config = { ...config, ...loadConfig(CONFIG_DEFAULT_PATH, file, logger) };
+    config = {
+      ...config,
+      ...loadConfig(CONFIG_DEFAULT_PATH, file, logger)
+    };
   });
 
   // If NEST_ADDITIONAL_CONFIG_LOCATION is found in environment
@@ -76,7 +79,10 @@ export const loadConfiguration = (logger: LoggerService) => {
       LOGGER_CTX
     );
     defaultConfigurationFiles.forEach((file) => {
-      config = { ...config, ...loadConfig(additionalLocation, file, logger) };
+      config = {
+        ...config,
+        ...loadConfig(additionalLocation, file, logger)
+      };
     });
   }
 
