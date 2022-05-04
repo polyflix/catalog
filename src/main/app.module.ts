@@ -6,7 +6,7 @@ import { HealthModule } from "./core/health/health.module";
 import { KafkaModule } from "./core/kafka/kafka.module";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { configureTypeORM } from "./config/database.config";
-import { TodoModule } from "./modules/infrastructure/todo.module";
+import { MainModule } from "../main/modules/infrastructure/main.module";
 
 interface AppModuleOptions {
   config?: Record<string, any>;
@@ -20,7 +20,7 @@ export class AppModule {
       imports: [
         KafkaModule,
         HealthModule,
-        TodoModule,
+        MainModule,
         OpenTelemetryModule.forRoot(),
         ConfigModule.forRoot({
           isGlobal: true,

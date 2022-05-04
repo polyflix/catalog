@@ -5,11 +5,13 @@ import {
   HealthCheckService,
   HttpHealthIndicator
 } from "@nestjs/terminus";
+import { ApiTags } from "@nestjs/swagger";
 
 /**
  * Export service readiness/liveness
  * More info: https://docs.nestjs.com/recipes/terminus
  */
+@ApiTags("HealthCheck")
 @Controller("health")
 export class HealthController {
   private readonly logger = new Logger(HealthController.name);
