@@ -1,6 +1,7 @@
 import { ApiProperty, OmitType } from "@nestjs/swagger";
 import { IsArray, IsOptional } from "class-validator";
 import { ModuleEntity } from "../../infrastructure/adapters/repositories/entities/module.entity";
+import { PasswordEntity } from "../../infrastructure/adapters/repositories/entities/password.entity";
 import { CreateModuleToElementDto } from "./moduleToElement.dto";
 
 export class CreateModuleDto extends OmitType(ModuleEntity, [
@@ -43,4 +44,7 @@ export class ModuleResponse {
 
   @ApiProperty()
   description: string;
+
+  @ApiProperty()
+  passwords: PasswordEntity[];
 }

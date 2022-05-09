@@ -1,12 +1,17 @@
 import { Result } from "@swan-io/boxed";
 import { ModuleInvalidError } from "../errors/module-invalid.error";
-import { Element } from "../models/element.model";
+import { Password } from "./password.model";
+import { Element } from "./element.model";
+import { Visibility } from "src/main/constants/content.enum";
+
 export class ModuleProps {
   name: string;
   slug: string;
   description: string;
   elements: Element[];
+  visibility: Visibility;
   userId: string;
+  passwords?: Password[];
 }
 
 export class ModuleToElement {
@@ -21,6 +26,8 @@ export class Module {
     public description: string,
     public elements: Element[] | ModuleToElement[],
     public userId: string,
+    public visibility: Visibility,
+    public passwords?: Password[],
     public id?: string
   ) {}
 
@@ -30,7 +37,9 @@ export class Module {
       props.slug,
       props.description,
       props.elements,
-      props.userId
+      props.userId,
+      props.visibility,
+      props.passwords
     );
 
     return module.validate().match({

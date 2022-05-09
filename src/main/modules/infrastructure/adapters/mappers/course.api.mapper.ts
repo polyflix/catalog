@@ -1,5 +1,4 @@
 import { Injectable } from "@nestjs/common";
-import { AbstractMapper } from "../../../../core/helpers/abstract.mapper";
 import {
   CreateCourseDto,
   CourseResponse

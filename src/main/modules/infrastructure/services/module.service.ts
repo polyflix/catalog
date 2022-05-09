@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
   Logger,
   NotFoundException,
@@ -26,8 +27,8 @@ import {
 } from "@polyflix/x-utils";
 import { KAFKA_MODULE_TOPIC } from "src/main/constants/kafka.topics";
 import { PsqlElementRepository } from "../adapters/repositories/psql-element.repository";
-import { ElementService } from "./element.service";
-import { Element } from "../../domain/models/element.model";
+import { Visibility } from "src/main/constants/content.enum";
+import { PasswordService } from "./password.service";
 
 @Injectable()
 export class ModuleService {
@@ -35,10 +36,10 @@ export class ModuleService {
 
   constructor(
     private readonly moduleApiMapper: ModuleApiMapper,
-    private readonly elementService: ElementService,
     private readonly psqlModuleRepository: PsqlModuleRepository,
     private readonly psqlElementRepository: PsqlElementRepository,
-    @InjectKafkaClient() private readonly kafkaClient: ClientKafka
+    @InjectKafkaClient() private readonly kafkaClient: ClientKafka,
+    private readonly passwordService: PasswordService
   ) {}
 
   async create(userId: string, dto: CreateModuleDto): Promise<Module> {
@@ -73,6 +74,11 @@ export class ModuleService {
 
     return model.match({
       Ok: (value) => {
+        if (module.visibility === Visibility.PROTECTED) {
+          module.passwords.map((password) => {
+            this.passwordService.create(password, value.id);
+          });
+        }
         this.kafkaClient.emit<string, PolyflixKafkaMessage>(
           KAFKA_MODULE_TOPIC,
           {
@@ -113,13 +119,48 @@ export class ModuleService {
     });
   }
 
-  async findOne(slug: string): Promise<Module> {
+  async findOne(
+    slug: string,
+    userId?: string,
+    accessKey?: string
+  ): Promise<Module> {
     const model = await this.psqlModuleRepository.findOne(slug);
 
     return model.match({
-      Some: async (value: Module) => {
-        await this.fetchWithElements(value);
-        return value;
+      Some: async (module: Module) => {
+        const isCreator = module.userId === userId;
+
+        // If the user is not the creator, we check if the user has the right to see the module
+        if (module.visibility === Visibility.PROTECTED && !isCreator) {
+          if (!accessKey) {
+            throw new BadRequestException(
+              "The module is protected, you need an access key in order to access it"
+            );
+          }
+          const password = await this.passwordService.findOne(
+            module.id,
+            accessKey
+          );
+
+          password.match({
+            Some: (value) => {
+              if (value.expiresAt !== null && value.expiresAt < new Date()) {
+                throw new ForbiddenException("The access key is expired");
+              }
+              if (value.isRevoked) {
+                throw new ForbiddenException("The access key is revoked");
+              }
+              return module;
+            },
+            None: () => {
+              throw new ForbiddenException(
+                "The access key is not valid, please check it"
+              );
+            }
+          });
+        }
+        await this.fetchWithElements(module);
+        return module;
       },
       None: () => {
         const error = "Module not found";

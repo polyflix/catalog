@@ -1,6 +1,5 @@
 import { ConfigService } from "@nestjs/config";
 import { TypeOrmModuleOptions } from "@nestjs/typeorm";
-import { ISLOCAL } from "./loader.config";
 import { resolve } from "path";
 import { writeFileSync } from "fs";
 
@@ -21,7 +20,7 @@ export const configureTypeORM = (
 
   const config: TypeOrmModuleOptions = {
     type: "postgres",
-    synchronize: ISLOCAL,
+    synchronize: false,
     migrationsTableName: "migrations",
     entities: ["dist/**/*.entity.js"],
     logging: configService.get("database.psql.debug") === "true",

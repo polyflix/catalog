@@ -11,7 +11,6 @@ import {
   DefaultModuleParams,
   ModuleParams
 } from "../../filters/params/module.param";
-import { UpdateModuleDto } from "src/main/modules/application/dto/module.dto";
 import { omitUndefined } from "src/main/core/helpers/undefined";
 
 @Injectable()

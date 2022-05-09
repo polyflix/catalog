@@ -12,8 +12,8 @@ import { ContentEntity } from "./content.entity";
 import { CourseEntity } from "./course.entity";
 import { UserEntity } from "./user.entity";
 import { ModuleToElementEntity } from "./moduleToElement.entity";
-import { ElementEntity } from "./element.entity";
 import { slugify } from "../../../../../core/helpers/slugify";
+import { PasswordEntity } from "./password.entity";
 
 @Entity("module")
 export class ModuleEntity extends ContentEntity {
@@ -47,6 +47,6 @@ export class ModuleEntity extends ContentEntity {
     this.slug = slugify(this.name);
   }
 
-  //   @OneToMany(() => PasswordEntity, (password) => password.module)
-  //   passwords?: PasswordEntity[];
+  @OneToMany(() => PasswordEntity, (password) => password.module)
+  passwords?: PasswordEntity[];
 }

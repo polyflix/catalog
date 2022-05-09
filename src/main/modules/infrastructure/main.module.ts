@@ -38,6 +38,11 @@ import { PsqlElementRepository } from "./adapters/repositories/psql-element.repo
 import { ElementApiMapper } from "./adapters/mappers/element.api.mapper";
 import { ElementEntityMapper } from "./adapters/mappers/element.entity.mapper";
 import { ElementRepository } from "../domain/ports/repositories/element.repository";
+import { PasswordService } from "./services/password.service";
+import { PsqlPasswordRepository } from "./adapters/repositories/psql-password.repository";
+import { PasswordRepository } from "../domain/ports/repositories/password.repository";
+import { PasswordEntity } from "./adapters/repositories/entities/password.entity";
+import { PasswordEntityMapper } from "./adapters/mappers/password.entity.mapper";
 
 @Module({
   imports: [
@@ -49,7 +54,8 @@ import { ElementRepository } from "../domain/ports/repositories/element.reposito
       CursusEntity,
       ElementEntity,
       TagEntity,
-      ModuleToElementEntity
+      ModuleToElementEntity,
+      PasswordEntity
     ])
   ],
   controllers: [
@@ -60,11 +66,13 @@ import { ElementRepository } from "../domain/ports/repositories/element.reposito
     ElementController
   ],
   providers: [
+    PasswordService,
     ModuleService,
     CourseService,
     CursusService,
     UserService,
     ElementService,
+    PsqlPasswordRepository,
     PsqlModuleRepository,
     PsqlCourseRepository,
     PsqlCursusRepository,
@@ -83,6 +91,7 @@ import { ElementRepository } from "../domain/ports/repositories/element.reposito
     ModuleEntityMapper,
     CourseApiMapper,
     CourseEntityMapper,
+    PasswordEntityMapper,
     { provide: ModuleRepository, useClass: PsqlModuleRepository },
     { provide: UserRepository, useClass: PsqlUserRepository },
     { provide: ElementRepository, useClass: PsqlElementRepository }
