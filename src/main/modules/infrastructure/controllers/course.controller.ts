@@ -2,7 +2,7 @@ import { Controller, Delete, Get, Post, Put } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 
 @ApiTags("Course")
-@Controller("course")
+@Controller("courses")
 export class CourseController {
   @Get()
   findAll(): string {
