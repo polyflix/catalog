@@ -1,4 +1,3 @@
-import { ApiProperty } from "@nestjs/swagger";
 import {
   Column,
   JoinTable,
@@ -17,18 +16,15 @@ export class ElementEntity extends ContentEntity {
   @Column()
   type: string;
 
-  @ApiProperty()
   @Column()
   name: string;
 
-  @ApiProperty()
   @Column("text", { nullable: true })
   description?: string;
 
   @Column({ unique: true })
   slug: string;
 
-  @ApiProperty()
   @Column({ nullable: true })
   thumbnail?: string;
 
