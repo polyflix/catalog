@@ -14,7 +14,7 @@ export class ModuleToElementEntity {
   @Column()
   order: number;
 
-  @ManyToOne(() => ModuleEntity, (module) => module.elementToModule, {
+  @ManyToOne(() => ModuleEntity, (module) => module.elements, {
     primary: true,
     persistence: false,
     onDelete: "CASCADE",
@@ -22,7 +22,7 @@ export class ModuleToElementEntity {
   })
   module!: ModuleEntity;
 
-  @ManyToOne(() => ElementEntity, (element) => element.elementToModule, {
+  @ManyToOne(() => ElementEntity, (element) => element.modules, {
     primary: true,
     persistence: false,
     onDelete: "CASCADE",

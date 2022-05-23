@@ -1,25 +1,27 @@
 import { ApiProperty, OmitType } from "@nestjs/swagger";
 import { IsArray, IsOptional } from "class-validator";
-import { ModuleEntity } from "../../infrastructure/adapters/repositories/entities/module.entity";
-import { CreateModuleToElementDto } from "./moduleToElement.dto";
+import { CourseEntity } from "../../infrastructure/adapters/repositories/entities/course.entity";
+import { ModuleResponse } from "./module.dto";
 
-export class CreateModuleDto extends OmitType(ModuleEntity, [
+export class CreateCourseDto extends OmitType(CourseEntity, [
   "id",
   "slug",
   "user",
   "createdAt",
   "updatedAt",
   "__v",
-  "elements"
+  "modules",
+  "cursus",
+  "generateSlug"
 ] as const) {
   @IsArray()
   @IsOptional({ always: true })
-  elements?: CreateModuleToElementDto[]; // element ids and order
+  modules?: string[]; // modules ids
 }
 
-export class UpdateModuleDto extends CreateModuleDto {}
+export class UpdateCourseDto extends CreateCourseDto {}
 
-export class ModuleResponse {
+export class CourseResponse {
   @ApiProperty()
   id: string;
 
@@ -43,4 +45,10 @@ export class ModuleResponse {
 
   @ApiProperty()
   description: string;
+
+  @ApiProperty()
+  content: string;
+
+  @ApiProperty()
+  modules: ModuleResponse;
 }

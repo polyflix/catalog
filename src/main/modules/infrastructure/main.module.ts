@@ -16,6 +16,16 @@ import { CursusEntity } from "./adapters/repositories/entities/cursus.entity";
 import { ElementEntity } from "./adapters/repositories/entities/element.entity";
 import { TagEntity } from "./adapters/repositories/entities/tag.entity";
 import { ModuleToElementEntity } from "./adapters/repositories/entities/moduleToElement.entity";
+import { CourseService } from "./services/course.service";
+import { PsqlCourseRepository } from "./adapters/repositories/psql-course.repository";
+import { CourseApiMapper } from "./adapters/mappers/course.api.mapper";
+import { CourseEntityMapper } from "./adapters/mappers/course.entity.mapper";
+import { CourseFilter } from "./filters/filters/course.filter";
+import { CursusService } from "./services/cursus.service";
+import { PsqlCursusRepository } from "./adapters/repositories/psql-cursus.repository";
+import { CursusFilter } from "./filters/filters/cursus.filter";
+import { CursusApiMapper } from "./adapters/mappers/cursus.api.mapper";
+import { CursusEntityMapper } from "./adapters/mappers/cursus.entity.mapper";
 
 @Module({
   imports: [
@@ -32,10 +42,20 @@ import { ModuleToElementEntity } from "./adapters/repositories/entities/moduleTo
   controllers: [ModuleController, CursusController, CourseController],
   providers: [
     ModuleService,
+    CourseService,
+    CursusService,
     PsqlModuleRepository,
+    PsqlCourseRepository,
+    PsqlCursusRepository,
+    CursusFilter,
     ModuleFilter,
+    CourseFilter,
+    CursusApiMapper,
+    CursusEntityMapper,
     ModuleApiMapper,
     ModuleEntityMapper,
+    CourseApiMapper,
+    CourseEntityMapper,
     { provide: ModuleRepository, useClass: PsqlModuleRepository }
   ],
   exports: []

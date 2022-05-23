@@ -7,12 +7,9 @@ import {
 import { Module, ModuleProps } from "../../../domain/models/module.model";
 
 @Injectable()
-export class ModuleApiMapper extends AbstractMapper<Module, ModuleResponse> {
+export class ModuleApiMapper {
   apiToEntity(apiModel: CreateModuleDto): Module {
-    // TODO WARN
-    const entity = Module.create(Object.assign(new ModuleProps(), apiModel));
-    Object.assign(entity, apiModel);
-    return entity;
+    return Module.create(Object.assign(new ModuleProps(), apiModel));
   }
 
   entityToApi(entity: Module): ModuleResponse {

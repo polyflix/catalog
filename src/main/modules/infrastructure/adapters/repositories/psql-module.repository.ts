@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { Option, Result } from "@swan-io/boxed";
@@ -12,6 +12,7 @@ import {
   ModuleParams
 } from "../../filters/params/module.param";
 import { UpdateModuleDto } from "src/main/modules/application/dto/module.dto";
+import { omitUndefined } from "src/main/core/helpers/undefined";
 
 @Injectable()
 export class PsqlModuleRepository extends ModuleRepository {
@@ -44,7 +45,9 @@ export class PsqlModuleRepository extends ModuleRepository {
     userId: string,
     isAdmin: boolean
   ): Promise<Option<Module[]>> {
-    const queryBuilder = this.moduleRepo.createQueryBuilder("module");
+    const queryBuilder = this.moduleRepo
+      .createQueryBuilder("module")
+      .leftJoinAndSelect("module.elements", "elements");
     this.moduleFilter.buildFilters(queryBuilder, params, userId, isAdmin);
     this.moduleFilter.buildPaginationAndSort(queryBuilder, params);
 
@@ -58,6 +61,7 @@ export class PsqlModuleRepository extends ModuleRepository {
   async findOne(slug: string): Promise<Option<Module>> {
     try {
       const result = await this.moduleRepo.findOne({
+        relations: ["elements"],
         where: { slug }
       });
       if (result) {
@@ -69,19 +73,20 @@ export class PsqlModuleRepository extends ModuleRepository {
     }
   }
 
-  async update(
-    slug: string,
-    updateData: UpdateModuleDto
-  ): Promise<Option<Module>> {
+  async update(slug: string, updateData: Module): Promise<Option<Module>> {
     try {
       const result = await this.moduleRepo.findOne({
+        relations: ["elements"],
         where: { slug }
       });
 
+      if (!result) {
+        throw new NotFoundException("Module not found");
+      }
+      const module = Object.assign(result, omitUndefined(updateData));
       const updatedModule = await this.moduleRepo.save(
-        Object.assign(result, updateData)
+        this.moduleEntityMapper.apiToEntity(module)
       );
-
       return Option.Some(this.moduleEntityMapper.entityToApi(updatedModule));
     } catch (e) {
       return Option.None();
@@ -95,5 +100,13 @@ export class PsqlModuleRepository extends ModuleRepository {
     } catch (e) {
       return Result.Error(e);
     }
+  }
+
+  async findByIds(ids: string[]): Promise<Option<Module[]>> {
+    const result = await this.moduleRepo.findByIds(ids);
+    if (result.length === 0) {
+      return Option.None();
+    }
+    return Option.Some(this.moduleEntityMapper.entitiesToApis(result));
   }
 }

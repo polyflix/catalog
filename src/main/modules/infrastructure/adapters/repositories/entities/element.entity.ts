@@ -4,12 +4,15 @@ import {
   Entity,
   ManyToOne,
   OneToMany,
-  ManyToMany
+  ManyToMany,
+  BeforeInsert,
+  BeforeUpdate
 } from "typeorm";
 import { UserEntity } from "./user.entity";
 import { ContentEntity } from "./content.entity";
 import { ModuleToElementEntity } from "./moduleToElement.entity";
 import { TagEntity } from "./tag.entity";
+import { slugify } from "../../../../../core/helpers/slugify";
 
 @Entity("element")
 export class ElementEntity extends ContentEntity {
@@ -31,6 +34,9 @@ export class ElementEntity extends ContentEntity {
   @ManyToOne(() => UserEntity, (user) => user.elements)
   user: UserEntity;
 
+  @Column("uuid")
+  userId?: string;
+
   @ManyToMany(() => TagEntity, (tag) => tag.elements, { eager: true })
   @JoinTable()
   tags?: TagEntity[];
@@ -38,10 +44,16 @@ export class ElementEntity extends ContentEntity {
   @OneToMany(() => ModuleToElementEntity, (type) => type.element, {
     cascade: true
   })
-  elementToModule: ModuleToElementEntity[];
+  modules: ModuleToElementEntity[];
 
   /**
    * Some element can have a join table with a ordering specific
    */
   order?: number;
+
+  @BeforeInsert()
+  @BeforeUpdate()
+  generateSlug() {
+    this.slug = slugify(this.name);
+  }
 }

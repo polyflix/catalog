@@ -1,6 +1,5 @@
 import { Logger } from "@nestjs/common";
 import { Option, Result } from "@swan-io/boxed";
-import { UpdateModuleDto } from "src/main/modules/application/dto/module.dto";
 import { ModuleParams } from "src/main/modules/infrastructure/filters/params/module.param";
 import { Module } from "../../models/module.model";
 
@@ -15,10 +14,10 @@ export abstract class ModuleRepository {
 
   abstract findOne(slug: string): Promise<Option<Module>>;
 
-  abstract create(video: Module): Promise<Result<Module, Error>>;
+  abstract create(module: Module): Promise<Result<Module, Error>>;
 
   abstract update(
     slug: string,
-    video: UpdateModuleDto
+    module: Module
   ): Promise<Option<Partial<Module>>>;
 }

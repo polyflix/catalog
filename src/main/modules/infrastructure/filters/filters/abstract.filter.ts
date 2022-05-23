@@ -1,3 +1,4 @@
+import { BadRequestException } from "@nestjs/common";
 import { SelectQueryBuilder } from "typeorm";
 
 export enum SortingTypeEnum {
@@ -76,7 +77,9 @@ export abstract class AbstractFilter<ENTITY> {
           SortingTypeEnum.DESC
         );
       } else {
-        throw new Error(criteria + " is not a possible ordering option.");
+        throw new BadRequestException(
+          criteria + " is not a possible ordering option."
+        );
       }
     } else {
       if (possibleOrderingValues.includes(inputCriteria)) {
@@ -86,7 +89,9 @@ export abstract class AbstractFilter<ENTITY> {
           SortingTypeEnum.ASC
         );
       } else {
-        throw new Error(inputCriteria + " is not a possible ordering option.");
+        throw new BadRequestException(
+          inputCriteria + " is not a possible ordering option."
+        );
       }
     }
   }

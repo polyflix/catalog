@@ -1,9 +1,19 @@
-import { Column, Entity, JoinTable, ManyToMany, ManyToOne } from "typeorm";
+import {
+  BeforeInsert,
+  BeforeUpdate,
+  Column,
+  Entity,
+  Index,
+  JoinTable,
+  ManyToMany,
+  ManyToOne
+} from "typeorm";
 import { ModuleEntity } from "./module.entity";
 import { MaxLength, MinLength } from "class-validator";
 import { ContentEntity } from "./content.entity";
 import { UserEntity } from "./user.entity";
 import { CursusEntity } from "./cursus.entity";
+import { slugify } from "../../../../../core/helpers/slugify";
 
 @Entity("course")
 export class CourseEntity extends ContentEntity {
@@ -13,6 +23,7 @@ export class CourseEntity extends ContentEntity {
   name: string;
 
   @Column({ unique: true })
+  @Index()
   slug: string;
 
   @Column("text")
@@ -24,6 +35,9 @@ export class CourseEntity extends ContentEntity {
   @MinLength(1)
   content: string;
 
+  @Column("uuid")
+  userId?: string;
+
   @ManyToOne(() => UserEntity, (user) => user.courses)
   user?: UserEntity;
 
@@ -33,4 +47,10 @@ export class CourseEntity extends ContentEntity {
 
   @ManyToMany(() => CursusEntity, (cursus) => cursus.courses)
   cursus?: CursusEntity[];
+
+  @BeforeInsert()
+  @BeforeUpdate()
+  generateSlug() {
+    this.slug = slugify(this.name);
+  }
 }

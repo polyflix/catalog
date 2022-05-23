@@ -2,26 +2,27 @@ import { Injectable } from "@nestjs/common";
 import { has } from "lodash";
 import { Visibility } from "src/main/constants/content.enum";
 import { SelectQueryBuilder } from "typeorm";
-import { ModuleEntity } from "../../adapters/repositories/entities/module.entity";
-import { ModuleParams } from "../params/module.param";
+import { CursusEntity } from "../../adapters/repositories/entities/cursus.entity";
+import { CursusParams } from "../params/cursus.param";
+
 import { AbstractFilter } from "./abstract.filter";
 
 @Injectable()
-export class ModuleFilter extends AbstractFilter<ModuleEntity> {
+export class CursusFilter extends AbstractFilter<CursusEntity> {
   buildFilters(
-    queryBuilder: SelectQueryBuilder<ModuleEntity>,
-    params: ModuleParams,
+    queryBuilder: SelectQueryBuilder<CursusEntity>,
+    params: CursusParams,
     userId: string,
     isAdmin: boolean
   ): void {
     let isMe: boolean;
-    if (has(params, "name")) {
-      queryBuilder.andWhere("module.name = :name", { name: params.name });
+    if (has(params, "title")) {
+      queryBuilder.andWhere("cursus.title = :title", { title: params.title });
     }
 
     if (has(params, "userId")) {
       isMe = userId === params?.userId;
-      queryBuilder.andWhere("module.userId = :userId", {
+      queryBuilder.andWhere("cursus.userId = :userId", {
         userId: params.userId
       });
     }
@@ -40,31 +41,31 @@ export class ModuleFilter extends AbstractFilter<ModuleEntity> {
   }
 
   buildPaginationAndSort(
-    queryBuilder: SelectQueryBuilder<ModuleEntity>,
-    params: ModuleParams
+    queryBuilder: SelectQueryBuilder<CursusEntity>,
+    params: CursusParams
   ): void {
     this.paginate(queryBuilder, params.page, params.pageSize);
 
     this.order(
-      "module",
+      "cursus",
       queryBuilder,
-      has(params, "order") ? params.order : "name",
-      ["name", "createdAt", "updatedAt"]
+      has(params, "order") ? params.order : "title",
+      ["title", "createdAt", "updatedAt"]
     );
   }
 
   private buildVisibilityFilters(
-    queryBuilder: SelectQueryBuilder<ModuleEntity>,
+    queryBuilder: SelectQueryBuilder<CursusEntity>,
     visibility?: Visibility,
     draft?: boolean
   ) {
     if (visibility != null) {
-      queryBuilder.andWhere("module.visibility = :visibility", {
+      queryBuilder.andWhere("cursus.visibility = :visibility", {
         visibility
       });
     }
     if (draft != null) {
-      queryBuilder.andWhere("module.draft = :draft", {
+      queryBuilder.andWhere("cursus.draft = :draft", {
         draft
       });
     }

@@ -36,6 +36,30 @@ export class ModuleService {
   ): Promise<Module> {
     const module: Module = this.moduleApiMapper.apiToEntity(moduleCreateDto);
     module.userId = userId;
+    // We can't allow orders duplicate, even if it is blocked in the database
+    // we prevent it here so we have a gentle error
+    if (moduleCreateDto.elements) {
+      const elementOrders = moduleCreateDto.elements.map((i) => i.order);
+      if (
+        elementOrders.filter((i, index) => elementOrders.indexOf(i) != index)
+          .length > 0
+      )
+        throw new BadRequestException("Two elements have the same order");
+    }
+    //TODO
+    // if (moduleCreateDto.elements) {
+    //   const mods = await this.psqlElementRepository.findByIds(
+    //     moduleCreateDto.elements
+    //   );
+    //   mods.match({
+    //     Some: (value) => {
+    //       module.elements = value;
+    //     },
+    //     None: () => {
+    //       throw new BadRequestException("Element not found");
+    //     }
+    //   });
+    // }
     const model: Result<Module, Error> = await this.psqlModuleRepository.create(
       module
     );
@@ -80,9 +104,10 @@ export class ModuleService {
   }
 
   async update(slug: string, dto: UpdateModuleDto): Promise<Module> {
-    const model = await this.psqlModuleRepository.update(slug, {
-      ...dto
-    });
+    const model = await this.psqlModuleRepository.update(
+      slug,
+      this.moduleApiMapper.apiToEntity(dto)
+    );
     return model.match({
       Some: (value) => value,
       None: () => {

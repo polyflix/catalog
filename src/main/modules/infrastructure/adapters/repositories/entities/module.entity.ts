@@ -39,9 +39,7 @@ export class ModuleEntity extends ContentEntity {
   @OneToMany(() => ModuleToElementEntity, (type) => type.module, {
     cascade: true
   })
-  elementToModule: ModuleToElementEntity[];
-
-  elements?: ElementEntity[];
+  elements: ModuleToElementEntity[];
 
   @BeforeInsert()
   @BeforeUpdate()

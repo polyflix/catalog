@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -81,24 +82,20 @@ export class ModuleController {
   }
 
   @Post()
-  @ApiResponse({
-    description: "The record has been successfully created.",
-    type: ModuleResponse
-  })
+  @ApiResponse({ type: ModuleResponse })
   async create(
     @MeId() userId: string,
     @Body() body: CreateModuleDto
   ): Promise<ModuleResponse> {
     this.logger.log(`POST /modules received body: ${JSON.stringify(body)}`);
-    //TODO later: check order
-    // if (body.elementToCollection) {
-    //   const elementOrders = body.elementToCollection.map((i) => i.order);
-    //   if (
-    //     elementOrders.filter((i, index) => elementOrders.indexOf(i) != index)
-    //       .length > 0
-    //   )
-    //     throw new BadRequestException('Two elements have the same order');
-    // }
+    if (body.elements) {
+      const elementOrders = body.elements.map((i) => i.order);
+      if (
+        elementOrders.filter((i, index) => elementOrders.indexOf(i) != index)
+          .length > 0
+      )
+        throw new BadRequestException("Two elements have the same order");
+    }
     const module: Module = await this.moduleService.create(userId, body);
     this.logger.log(`Successfully created module ${module.slug}`);
     return this.moduleApiMapper.entityToApi(module);

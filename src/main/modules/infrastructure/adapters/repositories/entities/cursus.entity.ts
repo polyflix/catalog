@@ -1,10 +1,14 @@
+import { slugify } from "../../../../../core/helpers/slugify";
 import {
   Column,
   Entity,
   JoinTable,
   JoinColumn,
   ManyToOne,
-  ManyToMany
+  ManyToMany,
+  Index,
+  BeforeInsert,
+  BeforeUpdate
 } from "typeorm";
 import { ContentEntity } from "./content.entity";
 import { CourseEntity } from "./course.entity";
@@ -13,9 +17,10 @@ import { UserEntity } from "./user.entity";
 @Entity("cursus")
 export class CursusEntity extends ContentEntity {
   @Column({ unique: true })
+  @Index()
   slug: string;
 
-  @Column({ unique: true })
+  @Column()
   title: string;
 
   @Column("text")
@@ -31,4 +36,10 @@ export class CursusEntity extends ContentEntity {
   @ManyToMany(() => CourseEntity, (course) => course.cursus)
   @JoinTable()
   courses?: CourseEntity[];
+
+  @BeforeInsert()
+  @BeforeUpdate()
+  generateSlug() {
+    this.slug = slugify(this.title);
+  }
 }
