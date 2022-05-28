@@ -20,6 +20,13 @@ import {
   DefaultCursusParams
 } from "../filters/params/cursus.param";
 import { PsqlCourseRepository } from "../adapters/repositories/psql-course.repository";
+import {
+  InjectKafkaClient,
+  PolyflixKafkaMessage,
+  TriggerType
+} from "@polyflix/x-utils";
+import { ClientKafka } from "@nestjs/microservices";
+import { KAFKA_CURSUS_TOPIC } from "../../../constants/kafka.topics";
 
 @Injectable()
 export class CursusService {
@@ -28,19 +35,15 @@ export class CursusService {
   constructor(
     private readonly cursusApiMapper: CursusApiMapper,
     private readonly psqlCursusRepository: PsqlCursusRepository,
-    private readonly psqlCourseRepository: PsqlCourseRepository
+    private readonly psqlCourseRepository: PsqlCourseRepository,
+    @InjectKafkaClient() private readonly kafkaClient: ClientKafka
   ) {}
 
-  async create(
-    userId: string,
-    cursusCreateDto: CreateCursusDto
-  ): Promise<Cursus> {
-    const cursus: Cursus = this.cursusApiMapper.apiToEntity(cursusCreateDto);
+  async create(userId: string, dto: CreateCursusDto): Promise<Cursus> {
+    const cursus: Cursus = this.cursusApiMapper.apiToEntity(dto);
     cursus.userId = userId;
-    if (cursusCreateDto.courses) {
-      const mods = await this.psqlCourseRepository.findByIds(
-        cursusCreateDto.courses
-      );
+    if (dto.courses && dto.courses.length) {
+      const mods = await this.psqlCourseRepository.findByIds(dto.courses);
       mods.match({
         Some: (value) => {
           cursus.courses = value;
@@ -55,7 +58,19 @@ export class CursusService {
     );
 
     return model.match({
-      Ok: (value) => value,
+      Ok: (value) => {
+        this.kafkaClient.emit<string, PolyflixKafkaMessage>(
+          KAFKA_CURSUS_TOPIC,
+          {
+            key: value.slug,
+            value: {
+              trigger: TriggerType.CREATE,
+              payload: value
+            }
+          }
+        );
+        return value;
+      },
       Error: (e) => {
         this.logger.error(e);
         throw new BadRequestException(e.toString());
@@ -95,7 +110,7 @@ export class CursusService {
 
   async update(slug: string, dto: UpdateCursusDto): Promise<Cursus> {
     const cursus: Cursus = this.cursusApiMapper.apiToEntity(dto);
-    if (dto.courses) {
+    if (dto.courses && dto.courses.length) {
       const mods = await this.psqlCourseRepository.findByIds(dto.courses);
       mods.match({
         Some: (value) => {
@@ -108,7 +123,19 @@ export class CursusService {
     }
     const model = await this.psqlCursusRepository.update(slug, cursus);
     return model.match({
-      Some: (value) => value,
+      Some: (value) => {
+        this.kafkaClient.emit<string, PolyflixKafkaMessage>(
+          KAFKA_CURSUS_TOPIC,
+          {
+            key: value.slug,
+            value: {
+              trigger: TriggerType.UPDATE,
+              payload: value
+            }
+          }
+        );
+        return value;
+      },
       None: () => {
         throw new UnprocessableEntityException(
           "This cursus cannot be updated right now, please try later"
@@ -123,7 +150,19 @@ export class CursusService {
     );
 
     return model.match({
-      Ok: (value) => value,
+      Ok: (value) => {
+        this.kafkaClient.emit<string, PolyflixKafkaMessage>(
+          KAFKA_CURSUS_TOPIC,
+          {
+            key: value.slug,
+            value: {
+              trigger: TriggerType.DELETE,
+              payload: value
+            }
+          }
+        );
+        return value;
+      },
       Error: (e) => {
         this.logger.error(e);
         throw new BadRequestException(e.toString());

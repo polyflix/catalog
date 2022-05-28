@@ -1,7 +1,7 @@
 import { Global, Module } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { ClientProxyFactory } from "@nestjs/microservices";
-import { KAFKA_CLIENT, kafkaConfig } from "src/main/config/kafka.config";
+import { kafkaConfig, KAFKA_CLIENT } from "@polyflix/x-utils";
 
 @Global()
 @Module({

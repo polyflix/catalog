@@ -10,7 +10,6 @@ import {
   CreateModuleDto,
   UpdateModuleDto
 } from "../../application/dto/module.dto";
-import { ConfigService } from "@nestjs/config";
 import { Result } from "@swan-io/boxed";
 import {
   DefaultModuleParams,
@@ -19,27 +18,31 @@ import {
 import { Module } from "../../domain/models/module.model";
 import { ModuleApiMapper } from "../adapters/mappers/module.api.mapper";
 import { PsqlModuleRepository } from "../adapters/repositories/psql-module.repository";
+import { ClientKafka } from "@nestjs/microservices";
+import {
+  InjectKafkaClient,
+  PolyflixKafkaMessage,
+  TriggerType
+} from "@polyflix/x-utils";
+import { KAFKA_MODULE_TOPIC } from "src/main/constants/kafka.topics";
 
 @Injectable()
 export class ModuleService {
   protected readonly logger = new Logger(ModuleService.name);
 
   constructor(
-    private readonly configService: ConfigService,
     private readonly moduleApiMapper: ModuleApiMapper,
-    private readonly psqlModuleRepository: PsqlModuleRepository
+    private readonly psqlModuleRepository: PsqlModuleRepository,
+    @InjectKafkaClient() private readonly kafkaClient: ClientKafka
   ) {}
 
-  async create(
-    userId: string,
-    moduleCreateDto: CreateModuleDto
-  ): Promise<Module> {
-    const module: Module = this.moduleApiMapper.apiToEntity(moduleCreateDto);
+  async create(userId: string, dto: CreateModuleDto): Promise<Module> {
+    const module: Module = this.moduleApiMapper.apiToEntity(dto);
     module.userId = userId;
     // We can't allow orders duplicate, even if it is blocked in the database
     // we prevent it here so we have a gentle error
-    if (moduleCreateDto.elements) {
-      const elementOrders = moduleCreateDto.elements.map((i) => i.order);
+    if (dto.elements && dto.elements.length) {
+      const elementOrders = dto.elements.map((i) => i.order);
       if (
         elementOrders.filter((i, index) => elementOrders.indexOf(i) != index)
           .length > 0
@@ -47,9 +50,9 @@ export class ModuleService {
         throw new BadRequestException("Two elements have the same order");
     }
     //TODO
-    // if (moduleCreateDto.elements) {
+    // if (dto.elements) {
     //   const mods = await this.psqlElementRepository.findByIds(
-    //     moduleCreateDto.elements
+    //     dto.elements
     //   );
     //   mods.match({
     //     Some: (value) => {
@@ -65,7 +68,19 @@ export class ModuleService {
     );
 
     return model.match({
-      Ok: (value) => value,
+      Ok: (value) => {
+        this.kafkaClient.emit<string, PolyflixKafkaMessage>(
+          KAFKA_MODULE_TOPIC,
+          {
+            key: value.slug,
+            value: {
+              trigger: TriggerType.CREATE,
+              payload: value
+            }
+          }
+        );
+        return value;
+      },
       Error: (e) => {
         this.logger.error(e);
         throw new BadRequestException(e.toString());
@@ -104,12 +119,32 @@ export class ModuleService {
   }
 
   async update(slug: string, dto: UpdateModuleDto): Promise<Module> {
+    if (dto.elements && dto.elements.length) {
+      const elementOrders = dto.elements.map((i) => i.order);
+      if (
+        elementOrders.filter((i, index) => elementOrders.indexOf(i) != index)
+          .length > 0
+      )
+        throw new BadRequestException("Two elements have the same order");
+    }
     const model = await this.psqlModuleRepository.update(
       slug,
       this.moduleApiMapper.apiToEntity(dto)
     );
     return model.match({
-      Some: (value) => value,
+      Some: (value) => {
+        this.kafkaClient.emit<string, PolyflixKafkaMessage>(
+          KAFKA_MODULE_TOPIC,
+          {
+            key: value.slug,
+            value: {
+              trigger: TriggerType.UPDATE,
+              payload: value
+            }
+          }
+        );
+        return value;
+      },
       None: () => {
         throw new UnprocessableEntityException(
           "This module cannot be updated right now, please try later"
@@ -124,7 +159,19 @@ export class ModuleService {
     );
 
     return model.match({
-      Ok: (value) => value,
+      Ok: (value) => {
+        this.kafkaClient.emit<string, PolyflixKafkaMessage>(
+          KAFKA_MODULE_TOPIC,
+          {
+            key: value.slug,
+            value: {
+              trigger: TriggerType.DELETE,
+              payload: value
+            }
+          }
+        );
+        return value;
+      },
       Error: (e) => {
         this.logger.error(e);
         throw new BadRequestException(e.toString());

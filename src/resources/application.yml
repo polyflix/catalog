@@ -7,10 +7,10 @@ telemetry:
 
 kafka:
   client:
-    clientId: todo-backend
+    clientId: catalog-backend
     brokers: localhost:29092
   consumer:
-    groupId: todo-consumer
+    groupId: catalog-consumer
     allowAutoTopicCreation: true
 
 database:

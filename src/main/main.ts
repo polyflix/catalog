@@ -1,7 +1,7 @@
 import { RequestMethod, ValidationPipe, VersioningType } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
-import { kafkaConfig } from "./config/kafka.config";
+import { kafkaConfig } from "@polyflix/x-utils";
 import { loadConfiguration } from "./config/loader.config";
 import { logger } from "./config/logger.config";
 import { configureOTel } from "./config/tracing.config";

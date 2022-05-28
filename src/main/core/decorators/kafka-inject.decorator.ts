@@ -1,5 +1,5 @@
 import { Inject } from "@nestjs/common";
-import { KAFKA_CLIENT } from "src/main/config/kafka.config";
+import { KAFKA_CLIENT } from "@polyflix/x-utils";
 
 export const InjectKafkaClient = () => {
   return Inject(KAFKA_CLIENT);
