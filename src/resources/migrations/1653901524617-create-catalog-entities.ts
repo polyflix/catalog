@@ -4,6 +4,8 @@ export class createCatalogEntities1653901524617 implements MigrationInterface {
   name = "createCatalogEntities1653901524617";
 
   public async up(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(`create extension if not exists "uuid-ossp"`);
+
     await queryRunner.query(
       `CREATE TABLE "module_elements_element" ("moduleId" uuid NOT NULL, "elementId" uuid NOT NULL, "order" integer NOT NULL, CONSTRAINT "UQ_9238596e4eff2707d06cbb44210" UNIQUE ("moduleId", "order", "elementId"), CONSTRAINT "PK_18acd6e2c654e4c4a6353858633" PRIMARY KEY ("moduleId", "elementId"))`
     );
