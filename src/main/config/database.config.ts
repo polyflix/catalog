@@ -25,6 +25,7 @@ export const configureTypeORM = (
     migrationsTableName: "migrations",
     entities: ["dist/**/*.entity.js"],
     logging: configService.get("database.psql.debug") === "true",
+    schema: "public",
     cli: {
       migrationsDir: "src/resources/migrations"
     },

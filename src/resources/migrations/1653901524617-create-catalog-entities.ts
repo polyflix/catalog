@@ -1,10 +1,9 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class createCatalogEntity1653893021487 implements MigrationInterface {
-  name = "createCatalogEntity1653893021487";
+export class createCatalogEntities1653901524617 implements MigrationInterface {
+  name = "createCatalogEntities1653901524617";
 
   public async up(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(`create extension if not exists "uuid-ossp"`);
     await queryRunner.query(
       `CREATE TABLE "module_elements_element" ("moduleId" uuid NOT NULL, "elementId" uuid NOT NULL, "order" integer NOT NULL, CONSTRAINT "UQ_9238596e4eff2707d06cbb44210" UNIQUE ("moduleId", "order", "elementId"), CONSTRAINT "PK_18acd6e2c654e4c4a6353858633" PRIMARY KEY ("moduleId", "elementId"))`
     );
@@ -12,16 +11,16 @@ export class createCatalogEntity1653893021487 implements MigrationInterface {
       `CREATE TABLE "tag" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "__v" integer NOT NULL DEFAULT '1', "label" text NOT NULL, "color" character varying(7) NOT NULL DEFAULT '#000000', "isReviewed" boolean NOT NULL DEFAULT false, CONSTRAINT "UQ_647c189a51deb35bc452751bc4a" UNIQUE ("label"), CONSTRAINT "PK_8e4052373c579afc1471f526760" PRIMARY KEY ("id"))`
     );
     await queryRunner.query(
-      `CREATE TYPE "catalog"."element_visibility_enum" AS ENUM('public', 'protected', 'private')`
+      `CREATE TYPE "public"."element_visibility_enum" AS ENUM('public', 'protected', 'private')`
     );
     await queryRunner.query(
-      `CREATE TABLE "element" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "__v" integer NOT NULL DEFAULT '1', "visibility" "catalog"."element_visibility_enum" NOT NULL DEFAULT 'public', "draft" boolean NOT NULL DEFAULT false, "type" character varying NOT NULL, "name" character varying, "description" text, "slug" character varying, "thumbnail" character varying, "userId" uuid, CONSTRAINT "PK_6c5f203479270d39efaad8cd82b" PRIMARY KEY ("id"))`
+      `CREATE TABLE "element" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "__v" integer NOT NULL DEFAULT '1', "visibility" "public"."element_visibility_enum" NOT NULL DEFAULT 'public', "draft" boolean NOT NULL DEFAULT false, "type" character varying NOT NULL, "name" character varying, "description" text, "slug" character varying, "thumbnail" character varying, "userId" uuid, CONSTRAINT "PK_6c5f203479270d39efaad8cd82b" PRIMARY KEY ("id"))`
     );
     await queryRunner.query(
-      `CREATE TYPE "catalog"."cursus_visibility_enum" AS ENUM('public', 'protected', 'private')`
+      `CREATE TYPE "public"."cursus_visibility_enum" AS ENUM('public', 'protected', 'private')`
     );
     await queryRunner.query(
-      `CREATE TABLE "cursus" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "__v" integer NOT NULL DEFAULT '1', "visibility" "catalog"."cursus_visibility_enum" NOT NULL DEFAULT 'public', "draft" boolean NOT NULL DEFAULT false, "slug" character varying NOT NULL, "title" character varying NOT NULL, "description" text NOT NULL, "userId" uuid NOT NULL, CONSTRAINT "UQ_133f31c2ec2bfcb6e499541c762" UNIQUE ("slug"), CONSTRAINT "PK_c716e690326af05b31edf511392" PRIMARY KEY ("id"))`
+      `CREATE TABLE "cursus" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "__v" integer NOT NULL DEFAULT '1', "visibility" "public"."cursus_visibility_enum" NOT NULL DEFAULT 'public', "draft" boolean NOT NULL DEFAULT false, "slug" character varying NOT NULL, "title" character varying NOT NULL, "description" text NOT NULL, "userId" uuid NOT NULL, CONSTRAINT "UQ_133f31c2ec2bfcb6e499541c762" UNIQUE ("slug"), CONSTRAINT "PK_c716e690326af05b31edf511392" PRIMARY KEY ("id"))`
     );
     await queryRunner.query(
       `CREATE INDEX "IDX_133f31c2ec2bfcb6e499541c76" ON "cursus" ("slug") `
@@ -30,19 +29,19 @@ export class createCatalogEntity1653893021487 implements MigrationInterface {
       `CREATE TABLE "user" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "firstName" character varying NOT NULL, "lastName" character varying NOT NULL, "avatar" character varying, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_cace4a159ff9f2512dd42373760" PRIMARY KEY ("id"))`
     );
     await queryRunner.query(
-      `CREATE TYPE "catalog"."module_visibility_enum" AS ENUM('public', 'protected', 'private')`
+      `CREATE TYPE "public"."module_visibility_enum" AS ENUM('public', 'protected', 'private')`
     );
     await queryRunner.query(
-      `CREATE TABLE "module" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "__v" integer NOT NULL DEFAULT '1', "visibility" "catalog"."module_visibility_enum" NOT NULL DEFAULT 'public', "draft" boolean NOT NULL DEFAULT false, "name" character varying NOT NULL, "slug" character varying NOT NULL, "description" text NOT NULL, "userId" uuid NOT NULL, CONSTRAINT "UQ_6f6b0fac734b5a498f8d4b75662" UNIQUE ("slug"), CONSTRAINT "PK_0e20d657f968b051e674fbe3117" PRIMARY KEY ("id"))`
+      `CREATE TABLE "module" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "__v" integer NOT NULL DEFAULT '1', "visibility" "public"."module_visibility_enum" NOT NULL DEFAULT 'public', "draft" boolean NOT NULL DEFAULT false, "name" character varying NOT NULL, "slug" character varying NOT NULL, "description" text NOT NULL, "userId" uuid NOT NULL, CONSTRAINT "UQ_6f6b0fac734b5a498f8d4b75662" UNIQUE ("slug"), CONSTRAINT "PK_0e20d657f968b051e674fbe3117" PRIMARY KEY ("id"))`
     );
     await queryRunner.query(
       `CREATE INDEX "IDX_6f6b0fac734b5a498f8d4b7566" ON "module" ("slug") `
     );
     await queryRunner.query(
-      `CREATE TYPE "catalog"."course_visibility_enum" AS ENUM('public', 'protected', 'private')`
+      `CREATE TYPE "public"."course_visibility_enum" AS ENUM('public', 'protected', 'private')`
     );
     await queryRunner.query(
-      `CREATE TABLE "course" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "__v" integer NOT NULL DEFAULT '1', "visibility" "catalog"."course_visibility_enum" NOT NULL DEFAULT 'public', "draft" boolean NOT NULL DEFAULT false, "name" character varying NOT NULL, "slug" character varying NOT NULL, "description" text NOT NULL, "content" text, "userId" uuid NOT NULL, CONSTRAINT "UQ_a101f48e5045bcf501540a4a5b8" UNIQUE ("slug"), CONSTRAINT "PK_bf95180dd756fd204fb01ce4916" PRIMARY KEY ("id"))`
+      `CREATE TABLE "course" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "__v" integer NOT NULL DEFAULT '1', "visibility" "public"."course_visibility_enum" NOT NULL DEFAULT 'public', "draft" boolean NOT NULL DEFAULT false, "name" character varying NOT NULL, "slug" character varying NOT NULL, "description" text NOT NULL, "content" text, "userId" uuid NOT NULL, CONSTRAINT "UQ_a101f48e5045bcf501540a4a5b8" UNIQUE ("slug"), CONSTRAINT "PK_bf95180dd756fd204fb01ce4916" PRIMARY KEY ("id"))`
     );
     await queryRunner.query(
       `CREATE INDEX "IDX_a101f48e5045bcf501540a4a5b" ON "course" ("slug") `
@@ -150,44 +149,44 @@ export class createCatalogEntity1653893021487 implements MigrationInterface {
       `ALTER TABLE "module_elements_element" DROP CONSTRAINT "FK_9c9237ea378d7b98ad2bdfa7a27"`
     );
     await queryRunner.query(
-      `DROP INDEX "catalog"."IDX_a3d8fafff28c4f254dc4621e8a"`
+      `DROP INDEX "public"."IDX_a3d8fafff28c4f254dc4621e8a"`
     );
     await queryRunner.query(
-      `DROP INDEX "catalog"."IDX_55ee6ebbe23a5ed8fbf8f3f25a"`
+      `DROP INDEX "public"."IDX_55ee6ebbe23a5ed8fbf8f3f25a"`
     );
     await queryRunner.query(`DROP TABLE "course_modules_module"`);
     await queryRunner.query(
-      `DROP INDEX "catalog"."IDX_07203925fecdf16cbfc7b722b2"`
+      `DROP INDEX "public"."IDX_07203925fecdf16cbfc7b722b2"`
     );
     await queryRunner.query(
-      `DROP INDEX "catalog"."IDX_d8e26dec6d52683ab4b5f3c945"`
+      `DROP INDEX "public"."IDX_d8e26dec6d52683ab4b5f3c945"`
     );
     await queryRunner.query(`DROP TABLE "cursus_courses_course"`);
     await queryRunner.query(
-      `DROP INDEX "catalog"."IDX_817d03b908ec39836eccf0857a"`
+      `DROP INDEX "public"."IDX_817d03b908ec39836eccf0857a"`
     );
     await queryRunner.query(
-      `DROP INDEX "catalog"."IDX_ad224561a78f7454420d5a3481"`
+      `DROP INDEX "public"."IDX_ad224561a78f7454420d5a3481"`
     );
     await queryRunner.query(`DROP TABLE "element_tags_tag"`);
     await queryRunner.query(
-      `DROP INDEX "catalog"."IDX_a101f48e5045bcf501540a4a5b"`
+      `DROP INDEX "public"."IDX_a101f48e5045bcf501540a4a5b"`
     );
     await queryRunner.query(`DROP TABLE "course"`);
-    await queryRunner.query(`DROP TYPE "catalog"."course_visibility_enum"`);
+    await queryRunner.query(`DROP TYPE "public"."course_visibility_enum"`);
     await queryRunner.query(
-      `DROP INDEX "catalog"."IDX_6f6b0fac734b5a498f8d4b7566"`
+      `DROP INDEX "public"."IDX_6f6b0fac734b5a498f8d4b7566"`
     );
     await queryRunner.query(`DROP TABLE "module"`);
-    await queryRunner.query(`DROP TYPE "catalog"."module_visibility_enum"`);
+    await queryRunner.query(`DROP TYPE "public"."module_visibility_enum"`);
     await queryRunner.query(`DROP TABLE "user"`);
     await queryRunner.query(
-      `DROP INDEX "catalog"."IDX_133f31c2ec2bfcb6e499541c76"`
+      `DROP INDEX "public"."IDX_133f31c2ec2bfcb6e499541c76"`
     );
     await queryRunner.query(`DROP TABLE "cursus"`);
-    await queryRunner.query(`DROP TYPE "catalog"."cursus_visibility_enum"`);
+    await queryRunner.query(`DROP TYPE "public"."cursus_visibility_enum"`);
     await queryRunner.query(`DROP TABLE "element"`);
-    await queryRunner.query(`DROP TYPE "catalog"."element_visibility_enum"`);
+    await queryRunner.query(`DROP TYPE "public"."element_visibility_enum"`);
     await queryRunner.query(`DROP TABLE "tag"`);
     await queryRunner.query(`DROP TABLE "module_elements_element"`);
   }
