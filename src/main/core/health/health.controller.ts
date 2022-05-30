@@ -25,13 +25,6 @@ export class HealthController {
   @Get()
   @HealthCheck()
   check() {
-    this.logger.log(`Check my service health`);
-    const serviceEndpoint: string = this.configService.get<string>(
-      "service.to.check.endpoint"
-    );
-
-    return this.health.check([
-      () => this.httpIndicator.pingCheck("myService", serviceEndpoint)
-    ]);
+    return this.health.check([]);
   }
 }
