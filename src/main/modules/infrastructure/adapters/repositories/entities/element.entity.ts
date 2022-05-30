@@ -19,13 +19,13 @@ export class ElementEntity extends ContentEntity {
   @Column()
   type: string;
 
-  @Column()
+  @Column({ nullable: true })
   name: string;
 
   @Column("text", { nullable: true })
   description?: string;
 
-  @Column({ unique: true })
+  @Column({ nullable: true })
   slug: string;
 
   @Column({ nullable: true })
@@ -34,7 +34,7 @@ export class ElementEntity extends ContentEntity {
   @ManyToOne(() => UserEntity, (user) => user.elements)
   user: UserEntity;
 
-  @Column("uuid")
+  @Column("uuid", { nullable: true })
   userId?: string;
 
   @ManyToMany(() => TagEntity, (tag) => tag.elements, { eager: true })
@@ -45,11 +45,6 @@ export class ElementEntity extends ContentEntity {
     cascade: true
   })
   modules: ModuleToElementEntity[];
-
-  /**
-   * Some element can have a join table with a ordering specific
-   */
-  order?: number;
 
   @BeforeInsert()
   @BeforeUpdate()
