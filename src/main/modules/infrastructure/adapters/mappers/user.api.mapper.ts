@@ -12,7 +12,6 @@ export class UserApiMapper extends AbstractMapper<User, UserDto> {
       apiModel.firstName,
       apiModel.lastName
     );
-    Object.assign(entity, apiModel);
     return entity;
   }
 

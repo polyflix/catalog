@@ -17,15 +17,12 @@ export class UserEntityMapper extends AbstractMapper<UserEntity, User> {
   }
 
   entityToApi(entity: UserEntity): User {
-    const props: User = {
+    const user: User = {
       id: entity.id,
       avatar: entity.avatar,
       firstName: entity.firstName,
       lastName: entity.lastName
     };
-    return Object.assign(
-      new User(entity.id, entity.avatar, entity.firstName, entity.lastName),
-      props
-    );
+    return user;
   }
 }

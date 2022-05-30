@@ -32,12 +32,19 @@ import { UserApiMapper } from "./adapters/mappers/user.api.mapper";
 import { UserEntityMapper } from "./adapters/mappers/user.entity.mapper";
 import { PsqlUserRepository } from "./adapters/repositories/psql-user.repository";
 import { UserRepository } from "../domain/ports/repositories/user.repository";
+import { ElementController } from "./controllers/events/element.controller";
+import { ElementService } from "./services/element.service";
+import { PsqlElementRepository } from "./adapters/repositories/psql-element.repository";
+import { ElementApiMapper } from "./adapters/mappers/element.api.mapper";
+import { ElementEntityMapper } from "./adapters/mappers/element.entity.mapper";
+import { ElementRepository } from "../domain/ports/repositories/element.repository";
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
       ModuleEntity,
       UserEntity,
+      ElementEntity,
       CourseEntity,
       CursusEntity,
       ElementEntity,
@@ -49,17 +56,20 @@ import { UserRepository } from "../domain/ports/repositories/user.repository";
     ModuleController,
     CursusController,
     CourseController,
-    UserController
+    UserController,
+    ElementController
   ],
   providers: [
     ModuleService,
     CourseService,
     CursusService,
     UserService,
+    ElementService,
     PsqlModuleRepository,
     PsqlCourseRepository,
     PsqlCursusRepository,
     PsqlUserRepository,
+    PsqlElementRepository,
     CursusFilter,
     ModuleFilter,
     CourseFilter,
@@ -67,12 +77,15 @@ import { UserRepository } from "../domain/ports/repositories/user.repository";
     CursusEntityMapper,
     UserApiMapper,
     UserEntityMapper,
+    ElementApiMapper,
+    ElementEntityMapper,
     ModuleApiMapper,
     ModuleEntityMapper,
     CourseApiMapper,
     CourseEntityMapper,
     { provide: ModuleRepository, useClass: PsqlModuleRepository },
-    { provide: UserRepository, useClass: PsqlUserRepository }
+    { provide: UserRepository, useClass: PsqlUserRepository },
+    { provide: ElementRepository, useClass: PsqlElementRepository }
   ],
   exports: []
 })

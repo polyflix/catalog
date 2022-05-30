@@ -6,7 +6,6 @@ import { CourseEntity } from "./entities/course.entity";
 import { CourseRepository } from "../../../domain/ports/repositories/course.repository";
 import { CourseEntityMapper } from "../mappers/course.entity.mapper";
 import { Course } from "../../../domain/models/course.model";
-import { UpdateCourseDto } from "src/main/modules/application/dto/course.dto";
 import { CourseFilter } from "../../filters/filters/course.filter";
 import {
   CourseParams,

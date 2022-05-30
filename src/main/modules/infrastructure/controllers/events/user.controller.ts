@@ -22,7 +22,7 @@ export class UserController {
     private readonly userService: UserService
   ) {}
 
-  @EventPattern("polyflix.legacy.user")
+  @EventPattern(KAFKA_USER_TOPIC)
   async process(@Payload("value") message: PolyflixCustomKafkaValue) {
     console.log("trigger user event ");
     const payload = message.fields;

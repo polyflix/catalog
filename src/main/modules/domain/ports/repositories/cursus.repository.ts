@@ -1,6 +1,6 @@
 import { Logger } from "@nestjs/common";
 import { Option, Result } from "@swan-io/boxed";
-import { CursusParams } from "src/main/modules/infrastructure/filters/params/cursus.param";
+import { CursusParams } from "../../../../modules/infrastructure/filters/params/cursus.param";
 import { Cursus } from "../../models/cursus.model";
 
 export abstract class CursusRepository {

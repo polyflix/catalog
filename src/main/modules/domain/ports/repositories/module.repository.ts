@@ -1,6 +1,6 @@
 import { Logger } from "@nestjs/common";
 import { Option, Result } from "@swan-io/boxed";
-import { ModuleParams } from "src/main/modules/infrastructure/filters/params/module.param";
+import { ModuleParams } from "../../../../modules/infrastructure/filters/params/module.param";
 import { Module } from "../../models/module.model";
 
 export abstract class ModuleRepository {
