@@ -61,6 +61,7 @@ export class ModuleController {
   async findOne(@Param("slug") slug: string): Promise<ModuleResponse> {
     this.logger.log(`GET /modules/${slug} received`);
     const module: Module = await this.moduleService.findOne(slug);
+
     return this.moduleApiMapper.entityToApi(module);
   }
 

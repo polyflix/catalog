@@ -15,7 +15,7 @@ import {
   DefaultModuleParams,
   ModuleParams
 } from "../filters/params/module.param";
-import { Module } from "../../domain/models/module.model";
+import { Module, ModuleToElement } from "../../domain/models/module.model";
 import { ModuleApiMapper } from "../adapters/mappers/module.api.mapper";
 import { PsqlModuleRepository } from "../adapters/repositories/psql-module.repository";
 import { ClientKafka } from "@nestjs/microservices";
@@ -25,6 +25,9 @@ import {
   TriggerType
 } from "@polyflix/x-utils";
 import { KAFKA_MODULE_TOPIC } from "src/main/constants/kafka.topics";
+import { PsqlElementRepository } from "../adapters/repositories/psql-element.repository";
+import { ElementService } from "./element.service";
+import { Element } from "../../domain/models/element.model";
 
 @Injectable()
 export class ModuleService {
@@ -32,7 +35,9 @@ export class ModuleService {
 
   constructor(
     private readonly moduleApiMapper: ModuleApiMapper,
+    private readonly elementService: ElementService,
     private readonly psqlModuleRepository: PsqlModuleRepository,
+    private readonly psqlElementRepository: PsqlElementRepository,
     @InjectKafkaClient() private readonly kafkaClient: ClientKafka
   ) {}
 
@@ -49,20 +54,19 @@ export class ModuleService {
       )
         throw new BadRequestException("Two elements have the same order");
     }
-    //TODO
-    // if (dto.elements) {
-    //   const mods = await this.psqlElementRepository.findByIds(
-    //     dto.elements
-    //   );
-    //   mods.match({
-    //     Some: (value) => {
-    //       module.elements = value;
-    //     },
-    //     None: () => {
-    //       throw new BadRequestException("Element not found");
-    //     }
-    //   });
-    // }
+    if (dto.elements) {
+      const mods = await this.psqlElementRepository.findByIds(
+        dto.elements.map((i) => i.elementId)
+      );
+      mods.match({
+        Some: () => {
+          //
+        },
+        None: () => {
+          throw new BadRequestException("Element not found");
+        }
+      });
+    }
     const model: Result<Module, Error> = await this.psqlModuleRepository.create(
       module
     );
@@ -99,8 +103,13 @@ export class ModuleService {
       isAdmin
     );
     return modules.match({
-      Some: (value: Module[]) => value,
-      None: () => []
+      Some: async (values: Module[]) => {
+        for (const i of values) {
+          await this.fetchWithElements(i);
+        }
+        return values;
+      },
+      None: () => Promise.all([])
     });
   }
 
@@ -108,9 +117,11 @@ export class ModuleService {
     const model = await this.psqlModuleRepository.findOne(slug);
 
     return model.match({
-      Some: (value: Module) => value,
+      Some: async (value: Module) => {
+        await this.fetchWithElements(value);
+        return value;
+      },
       None: () => {
-        null;
         const error = "Module not found";
         this.logger.error(error);
         throw new NotFoundException(error);
@@ -175,6 +186,28 @@ export class ModuleService {
       Error: (e) => {
         this.logger.error(e);
         throw new BadRequestException(e.toString());
+      }
+    });
+  }
+
+  async fetchWithElements(module: Module) {
+    const elements = await this.psqlElementRepository.findByIds(
+      module.elements.map((i) => i.elementId)
+    );
+
+    const modToElement = module.elements as ModuleToElement[];
+    return elements.match({
+      Some: (elements) => {
+        module.elements = elements.map((item) => ({
+          ...item,
+          order: modToElement.find((i) => i.elementId === item.id)?.order
+        }));
+
+        module.elements = module.elements.sort((a, b) => a.order - b.order);
+        return elements;
+      },
+      None: () => {
+        //
       }
     });
   }

@@ -24,7 +24,6 @@ export class UserController {
 
   @EventPattern(KAFKA_USER_TOPIC)
   async process(@Payload("value") message: PolyflixCustomKafkaValue) {
-    console.log("trigger user event ");
     const payload = message.fields;
     this.logger.log(
       `Receive message from topic: ${KAFKA_USER_TOPIC} - trigger: ${message.trigger}`

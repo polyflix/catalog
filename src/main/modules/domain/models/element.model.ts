@@ -1,13 +1,14 @@
 export class Element {
   constructor(
-    readonly id: string,
-    readonly name: string,
-    readonly slug: string,
-    readonly description: string,
-    readonly userId: string,
-    readonly thumbnail: string,
-    readonly type: string,
-    readonly draft: boolean,
-    readonly visibility: string
+    public id: string,
+    public name: string,
+    public slug: string,
+    public description: string,
+    public userId: string,
+    public thumbnail: string,
+    public type: string,
+    public draft: boolean,
+    public visibility: string,
+    public order: number
   ) {}
 }

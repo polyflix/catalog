@@ -15,7 +15,8 @@ export class ElementApiMapper extends AbstractMapper<Element, ElementDto> {
       thumbnail: apiModel.thumbnail,
       userId: apiModel.userId,
       visibility: apiModel.visibility,
-      draft: apiModel.draft
+      draft: apiModel.draft,
+      order: apiModel.order
     };
     return element;
   }

@@ -9,4 +9,5 @@ export class ElementDto {
   userId: string;
   visibility: string;
   draft: boolean;
+  order: number;
 }

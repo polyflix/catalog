@@ -46,6 +46,11 @@ export class ElementEntity extends ContentEntity {
   })
   modules: ModuleToElementEntity[];
 
+  /**
+   * Some element can have a join table with a ordering specific
+   */
+  order?: number;
+
   @BeforeInsert()
   @BeforeUpdate()
   generateSlug() {

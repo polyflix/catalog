@@ -66,4 +66,12 @@ export class PsqlElementRepository extends ElementRepository {
       return Result.Error(e);
     }
   }
+
+  async findByIds(ids: string[]): Promise<Option<Element[]>> {
+    const result = await this.elementRepo.findByIds(ids);
+    if (result.length === 0) {
+      return Option.None();
+    }
+    return Option.Some(this.elementEntityMapper.entitiesToApis(result));
+  }
 }

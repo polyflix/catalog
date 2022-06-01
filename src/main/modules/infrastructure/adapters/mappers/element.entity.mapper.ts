@@ -34,7 +34,8 @@ export class ElementEntityMapper extends AbstractMapper<
       thumbnail: entity.thumbnail,
       userId: entity.userId,
       visibility: entity.visibility,
-      draft: entity.draft
+      draft: entity.draft,
+      order: entity.order
     };
     return element;
   }

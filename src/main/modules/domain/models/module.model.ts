@@ -1,6 +1,6 @@
 import { Result } from "@swan-io/boxed";
 import { ModuleInvalidError } from "../errors/module-invalid.error";
-
+import { Element } from "../models/element.model";
 export class ModuleProps {
   name: string;
   slug: string;
@@ -9,12 +9,17 @@ export class ModuleProps {
   userId: string;
 }
 
+export class ModuleToElement {
+  public moduleId: string;
+  public elementId: string;
+  public order: number;
+}
 export class Module {
   private constructor(
     public name: string,
     public slug: string,
     public description: string,
-    public elements: Element[],
+    public elements: Element[] | ModuleToElement[],
     public userId: string,
     public id?: string
   ) {}
