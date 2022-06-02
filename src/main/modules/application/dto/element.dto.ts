@@ -10,4 +10,5 @@ export class ElementDto {
   visibility: string;
   draft: boolean;
   order: number;
+  publisherId: string;
 }

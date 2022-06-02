@@ -30,9 +30,6 @@ async function bootstrap() {
   });
 
   app.useGlobalPipes(new ValidationPipe());
-  app.setGlobalPrefix("/api/", {
-    exclude: [{ path: "health", method: RequestMethod.GET }]
-  });
 
   const configOpenApi = new DocumentBuilder()
     .setTitle("Polyflix Catalog service API")

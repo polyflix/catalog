@@ -13,7 +13,7 @@ export class ElementApiMapper extends AbstractMapper<Element, ElementDto> {
       type: apiModel.type,
       description: apiModel.description,
       thumbnail: apiModel.thumbnail,
-      userId: apiModel.userId,
+      userId: apiModel.userId || apiModel.publisherId,
       visibility: apiModel.visibility,
       draft: apiModel.draft,
       order: apiModel.order

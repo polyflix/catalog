@@ -9,10 +9,6 @@ import { UserService } from "../../services/user.service";
 import { UserDto } from "src/main/modules/application/dto/user.dto";
 import { KAFKA_USER_TOPIC } from "src/main/constants/kafka.topics";
 
-interface PolyflixCustomKafkaValue extends PolyflixKafkaValue {
-  fields: any;
-}
-
 @Controller()
 export class UserController {
   private readonly logger = new Logger(UserController.name);
@@ -23,12 +19,11 @@ export class UserController {
   ) {}
 
   @EventPattern(KAFKA_USER_TOPIC)
-  async process(@Payload("value") message: PolyflixCustomKafkaValue) {
-    const payload = message.fields;
+  async process(@Payload("value") message: PolyflixKafkaValue) {
     this.logger.log(
       `Receive message from topic: ${KAFKA_USER_TOPIC} - trigger: ${message.trigger}`
     );
-    const user: UserDto = Object.assign(new UserDto(), payload);
+    const user: UserDto = Object.assign(new UserDto(), message.payload);
     switch (message.trigger) {
       case TriggerType.UPDATE:
         await this.userService.updateUser(user);

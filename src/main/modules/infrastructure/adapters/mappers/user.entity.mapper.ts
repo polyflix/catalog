@@ -8,7 +8,7 @@ export class UserEntityMapper extends AbstractMapper<UserEntity, User> {
   apiToEntity(apiModel: User): UserEntity {
     const user = new UserEntity();
     Object.assign(user, {
-      userId: apiModel.id,
+      id: apiModel.id,
       avatar: apiModel.avatar,
       firstName: apiModel.firstName,
       lastName: apiModel.lastName

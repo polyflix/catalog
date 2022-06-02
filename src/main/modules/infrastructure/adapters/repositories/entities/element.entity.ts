@@ -50,10 +50,4 @@ export class ElementEntity extends ContentEntity {
    * Some element can have a join table with a ordering specific
    */
   order?: number;
-
-  @BeforeInsert()
-  @BeforeUpdate()
-  generateSlug() {
-    this.slug = slugify(this.name);
-  }
 }
