@@ -55,7 +55,7 @@ export class ModuleService {
       )
         throw new BadRequestException("Two elements have the same order");
     }
-    if (dto.elements) {
+    if (dto.elements && dto.elements.length) {
       const mods = await this.psqlElementRepository.findByIds(
         dto.elements.map((i) => i.elementId)
       );
@@ -178,6 +178,19 @@ export class ModuleService {
           .length > 0
       )
         throw new BadRequestException("Two elements have the same order");
+    }
+    if (dto.elements && dto.elements.length) {
+      const mods = await this.psqlElementRepository.findByIds(
+        dto.elements.map((i) => i.elementId)
+      );
+      mods.match({
+        Some: () => {
+          //
+        },
+        None: () => {
+          throw new BadRequestException("Element not found");
+        }
+      });
     }
     const model = await this.psqlModuleRepository.update(
       slug,
