@@ -1,6 +1,6 @@
 export const KAFKA_USER_TOPIC = "polyflix.user";
 export const KAFKA_VIDEO_TOPIC = "polyflix.video";
-export const KAFKA_QUIZZ_TOPIC = "polyflix.quizz";
+export const KAFKA_QUIZZ_TOPIC = "polyflix.quiz";
 export const KAFKA_ATTACHMENT_TOPIC = "polyflix.attachment";
 
 export const KAFKA_MODULE_TOPIC = "polyflix.catalog.module";
