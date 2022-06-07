@@ -49,7 +49,7 @@ async function bootstrap() {
 
   const port = config["server"]["port"] || 3000;
   app.connectMicroservice(kafkaConfig(config["kafka"]));
-  await app.startAllMicroservices();
+  app.startAllMicroservices();
 
   await app.listen(port, () => {
     logger.log(`Server listening on port ${port}`, "NestApplication");
