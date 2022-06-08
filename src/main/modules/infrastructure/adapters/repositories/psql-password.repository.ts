@@ -23,7 +23,10 @@ export class PsqlPasswordRepository extends PasswordRepository {
   ): Promise<Option<Password>> {
     try {
       const result = await this.passwordRepo.findOne({
-        where: { moduleId: moduleId, password: accessKey }
+        where: {
+          moduleId: moduleId,
+          password: Buffer.from(accessKey, "base64").toString("utf8")
+        }
       });
       if (result) {
         return Option.Some(this.passwordEntityMapper.entityToApi(result));
