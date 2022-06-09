@@ -43,8 +43,10 @@ export class ModuleService {
   ) {}
 
   async create(userId: string, dto: CreateModuleDto): Promise<Module> {
-    const module: Module = this.moduleApiMapper.apiToEntity(dto);
-    module.userId = userId;
+    const module: Module = this.moduleApiMapper.apiToEntity({
+      ...dto,
+      ...{ user: { id: userId } }
+    });
     // We can't allow orders duplicate, even if it is blocked in the database
     // we prevent it here so we have a gentle error
     if (dto.elements && dto.elements.length) {
@@ -128,7 +130,7 @@ export class ModuleService {
 
     return model.match({
       Some: async (module: Module) => {
-        const isCreator = module.userId === userId;
+        const isCreator = module.user.id === userId;
 
         // If the user is not the creator, we check if the user has the right to see the module
         if (module.visibility === Visibility.PROTECTED && !isCreator) {

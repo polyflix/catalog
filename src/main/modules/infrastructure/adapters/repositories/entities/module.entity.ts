@@ -27,7 +27,9 @@ export class ModuleEntity extends ContentEntity {
   @Column("text")
   description: string;
 
-  @ManyToOne(() => UserEntity, (user) => user.modules)
+  @ManyToOne(() => UserEntity, (user) => user.modules, {
+    eager: true
+  })
   user?: UserEntity;
 
   @Column("uuid")

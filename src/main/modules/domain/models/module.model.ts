@@ -3,6 +3,7 @@ import { ModuleInvalidError } from "../errors/module-invalid.error";
 import { Password } from "./password.model";
 import { Element } from "./element.model";
 import { Visibility } from "src/main/constants/content.enum";
+import { User } from "./user.model";
 
 export class ModuleProps {
   name: string;
@@ -10,7 +11,7 @@ export class ModuleProps {
   description: string;
   elements: Element[];
   visibility: Visibility;
-  userId: string;
+  user: User;
   passwords?: Password[];
 }
 
@@ -25,7 +26,7 @@ export class Module {
     public slug: string,
     public description: string,
     public elements: Element[] | ModuleToElement[],
-    public userId: string,
+    public user: User,
     public visibility: Visibility,
     public passwords?: Password[],
     public id?: string
@@ -37,7 +38,7 @@ export class Module {
       props.slug,
       props.description,
       props.elements,
-      props.userId,
+      props.user,
       props.visibility,
       props.passwords
     );

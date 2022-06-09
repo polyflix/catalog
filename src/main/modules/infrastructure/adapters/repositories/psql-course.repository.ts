@@ -46,7 +46,8 @@ export class PsqlCourseRepository extends CourseRepository {
   ): Promise<Option<Course[]>> {
     const queryBuilder = this.courseRepo
       .createQueryBuilder("course")
-      .leftJoinAndSelect("course.modules", "modules");
+      .leftJoinAndSelect("course.modules", "modules")
+      .leftJoinAndSelect("course.user", "user");
     this.courseFilter.buildFilters(queryBuilder, params, userId, isAdmin);
     this.courseFilter.buildPaginationAndSort(queryBuilder, params);
 
@@ -60,7 +61,7 @@ export class PsqlCourseRepository extends CourseRepository {
   async findOne(slug: string): Promise<Option<Course>> {
     try {
       const result = await this.courseRepo.findOne({
-        relations: ["modules"],
+        relations: ["user"],
         where: { slug }
       });
       if (result) {
@@ -75,6 +76,7 @@ export class PsqlCourseRepository extends CourseRepository {
   async update(slug: string, updateData: Course): Promise<Option<Course>> {
     try {
       const result = await this.courseRepo.findOne({
+        relations: ["modules", "user"],
         where: { slug }
       });
 

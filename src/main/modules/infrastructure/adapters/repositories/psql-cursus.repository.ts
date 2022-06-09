@@ -47,7 +47,8 @@ export class PsqlCursusRepository extends CursusRepository {
   ): Promise<Option<Cursus[]>> {
     const queryBuilder = this.cursusRepo
       .createQueryBuilder("cursus")
-      .leftJoinAndSelect("cursus.courses", "courses");
+      .leftJoinAndSelect("cursus.courses", "courses")
+      .leftJoinAndSelect("cursus.user", "user");
     this.cursusFilter.buildFilters(queryBuilder, params, userId, isAdmin);
     this.cursusFilter.buildPaginationAndSort(queryBuilder, params);
 

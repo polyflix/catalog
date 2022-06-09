@@ -141,7 +141,7 @@ export class ModuleController {
     const entity: Module = await this.moduleService.findOne(slug);
 
     // if the user is not the creator of the resource
-    if (entity.userId !== userId) {
+    if (entity.user.id !== userId) {
       throw new ForbiddenException(
         "You cannot execute this action on a resource that you didn't own."
       );

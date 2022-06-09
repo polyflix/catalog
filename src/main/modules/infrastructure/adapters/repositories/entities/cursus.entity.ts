@@ -26,14 +26,18 @@ export class CursusEntity extends ContentEntity {
   @Column("text")
   description: string;
 
-  @ManyToOne(() => UserEntity, (user) => user.cursus)
+  @ManyToOne(() => UserEntity, (user) => user.cursus, {
+    eager: true
+  })
   @JoinColumn({ name: "userId" })
-  user?: Promise<UserEntity>;
+  user?: UserEntity;
 
   @Column("uuid")
   userId?: string;
 
-  @ManyToMany(() => CourseEntity, (course) => course.cursus)
+  @ManyToMany(() => CourseEntity, (course) => course.cursus, {
+    eager: true
+  })
   @JoinTable()
   courses?: CourseEntity[];
 

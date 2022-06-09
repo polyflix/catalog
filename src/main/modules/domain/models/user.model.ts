@@ -1,8 +1,8 @@
 export class User {
   constructor(
-    readonly id: string,
-    readonly avatar: string,
-    readonly firstName: string,
-    readonly lastName: string
+    public id: string,
+    public avatar: string,
+    public firstName: string,
+    public lastName: string
   ) {}
 }

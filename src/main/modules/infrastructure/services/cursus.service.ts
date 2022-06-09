@@ -40,8 +40,10 @@ export class CursusService {
   ) {}
 
   async create(userId: string, dto: CreateCursusDto): Promise<Cursus> {
-    const cursus: Cursus = this.cursusApiMapper.apiToEntity(dto);
-    cursus.userId = userId;
+    const cursus: Cursus = this.cursusApiMapper.apiToEntity({
+      ...dto,
+      ...{ user: { id: userId } }
+    });
     if (dto.courses && dto.courses.length) {
       const mods = await this.psqlCourseRepository.findByIds(dto.courses);
       mods.match({

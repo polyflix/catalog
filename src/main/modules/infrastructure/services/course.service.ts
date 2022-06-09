@@ -39,8 +39,10 @@ export class CourseService {
   ) {}
 
   async create(userId: string, dto: CreateCourseDto): Promise<Course> {
-    const course: Course = this.courseApiMapper.apiToEntity(dto);
-    course.userId = userId;
+    const course: Course = this.courseApiMapper.apiToEntity({
+      ...dto,
+      ...{ user: { id: userId } }
+    });
     if (dto.modules && dto.modules.length) {
       const mods = await this.psqlModuleRepository.findByIds(dto.modules);
       mods.match({
@@ -122,10 +124,7 @@ export class CourseService {
       });
     }
 
-    const model = await this.psqlCourseRepository.update(
-      slug,
-      this.courseApiMapper.apiToEntity(dto)
-    );
+    const model = await this.psqlCourseRepository.update(slug, course);
     return model.match({
       Some: (value) => {
         this.kafkaClient.emit<string, PolyflixKafkaMessage>(

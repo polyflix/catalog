@@ -1,13 +1,14 @@
 import { Result } from "@swan-io/boxed";
 import { CursusInvalidError } from "../errors/cursus-invalid.error";
 import { Course } from "./course.model";
+import { User } from "./user.model";
 
 export class CursusProps {
   title: string;
   slug: string;
   description: string;
   courses: Course[];
-  userId: string;
+  user: User;
 }
 
 export class Cursus {
@@ -16,7 +17,7 @@ export class Cursus {
     public slug: string,
     public description: string,
     public courses: Course[],
-    public userId: string,
+    public user: User,
     public id?: string
   ) {}
 
@@ -26,7 +27,7 @@ export class Cursus {
       props.slug,
       props.description,
       props.courses,
-      props.userId
+      props.user
     );
 
     return cursus.validate().match({

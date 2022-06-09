@@ -46,7 +46,8 @@ export class PsqlModuleRepository extends ModuleRepository {
   ): Promise<Option<Module[]>> {
     const queryBuilder = this.moduleRepo
       .createQueryBuilder("module")
-      .leftJoinAndSelect("module.elements", "elements");
+      .leftJoinAndSelect("module.elements", "elements")
+      .leftJoinAndSelect("module.user", "user");
     this.moduleFilter.buildFilters(queryBuilder, params, userId, isAdmin);
     this.moduleFilter.buildPaginationAndSort(queryBuilder, params);
 
@@ -60,7 +61,7 @@ export class PsqlModuleRepository extends ModuleRepository {
   async findOne(slug: string): Promise<Option<Module>> {
     try {
       const result = await this.moduleRepo.findOne({
-        relations: ["elements"],
+        relations: ["elements", "user"],
         where: { slug }
       });
       if (result) {
@@ -75,7 +76,7 @@ export class PsqlModuleRepository extends ModuleRepository {
   async update(slug: string, updateData: Module): Promise<Option<Module>> {
     try {
       const result = await this.moduleRepo.findOne({
-        relations: ["elements"],
+        relations: ["elements", "user"],
         where: { slug }
       });
 

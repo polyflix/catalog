@@ -1,6 +1,7 @@
 import { Result } from "@swan-io/boxed";
 import { CourseInvalidError } from "../errors/course-invalid.error";
 import { Module } from "./module.model";
+import { User } from "./user.model";
 
 export class CourseProps {
   name: string;
@@ -8,7 +9,7 @@ export class CourseProps {
   description: string;
   content: string;
   modules: Module[];
-  userId: string;
+  user: User;
 }
 
 export class Course {
@@ -18,7 +19,7 @@ export class Course {
     public description: string,
     public content: string,
     public modules: Module[],
-    public userId: string,
+    public user: User,
     public id?: string
   ) {}
 
@@ -29,7 +30,7 @@ export class Course {
       props.description,
       props.content,
       props.modules,
-      props.userId
+      props.user
     );
 
     return course.validate().match({

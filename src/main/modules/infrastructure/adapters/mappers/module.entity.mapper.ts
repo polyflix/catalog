@@ -3,10 +3,14 @@ import { AbstractMapper } from "../../../../core/helpers/abstract.mapper";
 import { Module, ModuleProps } from "../../../domain/models/module.model";
 import { ModuleEntity } from "../repositories/entities/module.entity";
 import { PasswordEntityMapper } from "./password.entity.mapper";
+import { UserEntityMapper } from "./user.entity.mapper";
 
 @Injectable()
 export class ModuleEntityMapper extends AbstractMapper<ModuleEntity, Module> {
-  constructor(private readonly passwordEntityMapper: PasswordEntityMapper) {
+  constructor(
+    private readonly passwordEntityMapper: PasswordEntityMapper,
+    private readonly userEntityMapper: UserEntityMapper
+  ) {
     super();
   }
   apiToEntity(apiModel: Module): ModuleEntity {
@@ -21,7 +25,7 @@ export class ModuleEntityMapper extends AbstractMapper<ModuleEntity, Module> {
       slug: entity.slug,
       description: entity.description,
       elements: [], // this.elementEntityMapper.entitiesToApis(entity.elements), //TODO: map element entity to Entity
-      userId: entity.userId,
+      user: entity.user ? this.userEntityMapper.entityToApi(entity.user) : null,
       visibility: entity.visibility,
       passwords: this.passwordEntityMapper.entitiesToApis(
         entity.passwords || []

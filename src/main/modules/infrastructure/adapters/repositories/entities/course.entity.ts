@@ -38,10 +38,14 @@ export class CourseEntity extends ContentEntity {
   @Column("uuid")
   userId?: string;
 
-  @ManyToOne(() => UserEntity, (user) => user.courses)
+  @ManyToOne(() => UserEntity, (user) => user.courses, {
+    eager: true
+  })
   user?: UserEntity;
 
-  @ManyToMany(() => ModuleEntity, (module) => module.courses)
+  @ManyToMany(() => ModuleEntity, (module) => module.courses, {
+    eager: true
+  })
   @JoinTable()
   modules?: ModuleEntity[];
 

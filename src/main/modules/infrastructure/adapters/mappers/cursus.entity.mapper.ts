@@ -3,10 +3,14 @@ import { AbstractMapper } from "../../../../core/helpers/abstract.mapper";
 import { Cursus, CursusProps } from "../../../domain/models/cursus.model";
 import { CursusEntity } from "../repositories/entities/cursus.entity";
 import { CourseEntityMapper } from "./course.entity.mapper";
+import { UserEntityMapper } from "./user.entity.mapper";
 
 @Injectable()
 export class CursusEntityMapper extends AbstractMapper<CursusEntity, Cursus> {
-  constructor(private readonly courseEntityMapper: CourseEntityMapper) {
+  constructor(
+    private readonly courseEntityMapper: CourseEntityMapper,
+    private readonly userEntityMapper: UserEntityMapper
+  ) {
     super();
   }
 
@@ -22,7 +26,7 @@ export class CursusEntityMapper extends AbstractMapper<CursusEntity, Cursus> {
       slug: entity.slug,
       description: entity.description,
       courses: this.courseEntityMapper.entitiesToApis(entity.courses || []),
-      userId: entity.userId
+      user: this.userEntityMapper.entityToApi(entity.user)
     };
 
     const cursus = Cursus.create(cursusProps);
