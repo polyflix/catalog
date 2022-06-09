@@ -244,6 +244,10 @@ export class ModuleService {
     });
   }
 
+  async count(params: ModuleParams): Promise<number> {
+    return this.psqlModuleRepository.count(params);
+  }
+
   async fetchWithElements(module: Module) {
     const elements = await this.psqlElementRepository.findByIds(
       module.elements.map((i) => i.elementId)

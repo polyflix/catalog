@@ -50,7 +50,7 @@ export class CourseController {
     );
     return {
       data: courses.map(this.courseApiMapper.entityToApi),
-      total: courses.length,
+      total: await this.courseService.count(query),
       page: query.page,
       pageSize: query.pageSize
     };

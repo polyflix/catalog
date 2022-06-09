@@ -50,7 +50,7 @@ export class CursusController {
     );
     return {
       data: cursus.map(this.cursusApiMapper.entityToApi),
-      total: cursus.length,
+      total: await this.cursusService.count(query),
       page: query.page,
       pageSize: query.pageSize
     };

@@ -102,8 +102,8 @@ export abstract class AbstractFilter<ENTITY> {
     pageSize = this.DEFAULT_PAGINATED_QUERY_PAGESIZE
   ): void {
     if (!pageSize) pageSize = this.DEFAULT_PAGINATED_QUERY_PAGESIZE;
-    queryBuilder.limit(pageSize);
-    queryBuilder.offset(((page || 1) - 1) * pageSize);
+    queryBuilder.take(pageSize);
+    queryBuilder.skip(((page || 1) - 1) * pageSize);
   }
 
   protected stringArrayToNumber(values: string[]): number[] {

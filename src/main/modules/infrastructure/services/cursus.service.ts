@@ -169,4 +169,8 @@ export class CursusService {
       }
     });
   }
+
+  async count(params: CursusParams): Promise<number> {
+    return this.psqlCursusRepository.count(params);
+  }
 }

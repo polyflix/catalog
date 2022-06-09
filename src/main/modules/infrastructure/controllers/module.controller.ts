@@ -51,7 +51,7 @@ export class ModuleController {
     );
     return {
       data: modules.map(this.moduleApiMapper.entityToApi),
-      total: modules.length,
+      total: await this.moduleService.count(query),
       page: query.page,
       pageSize: query.pageSize
     };

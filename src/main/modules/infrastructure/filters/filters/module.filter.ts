@@ -69,4 +69,14 @@ export class ModuleFilter extends AbstractFilter<ModuleEntity> {
       });
     }
   }
+
+  totalCount(
+    queryBuilder: SelectQueryBuilder<ModuleEntity>,
+    params: ModuleParams,
+    me?: string,
+    isAdmin?: boolean
+  ): void {
+    this.buildFilters(queryBuilder, params, me, isAdmin);
+    queryBuilder.select("COUNT(DISTINCT module.id) AS total");
+  }
 }

@@ -108,4 +108,13 @@ export class PsqlCourseRepository extends CourseRepository {
     }
     return Option.Some(this.courseEntityMapper.entitiesToApis(result));
   }
+
+  async count(params: CourseParams): Promise<number> {
+    const queryBuilder = this.courseRepo.createQueryBuilder("course");
+    this.courseFilter.totalCount(queryBuilder, params);
+
+    const count = await queryBuilder.getCount();
+
+    return count || 0;
+  }
 }

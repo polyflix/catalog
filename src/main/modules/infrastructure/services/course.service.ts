@@ -173,4 +173,8 @@ export class CourseService {
       }
     });
   }
+
+  async count(params: CourseParams): Promise<number> {
+    return this.psqlCourseRepository.count(params);
+  }
 }

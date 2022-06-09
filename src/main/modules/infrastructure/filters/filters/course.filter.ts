@@ -70,4 +70,14 @@ export class CourseFilter extends AbstractFilter<CourseEntity> {
       });
     }
   }
+
+  totalCount(
+    queryBuilder: SelectQueryBuilder<CourseEntity>,
+    params: CourseParams,
+    me?: string,
+    isAdmin?: boolean
+  ): void {
+    this.buildFilters(queryBuilder, params, me, isAdmin);
+    queryBuilder.select("COUNT(DISTINCT course.id) AS total");
+  }
 }

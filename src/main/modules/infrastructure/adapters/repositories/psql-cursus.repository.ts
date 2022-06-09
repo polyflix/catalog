@@ -104,4 +104,13 @@ export class PsqlCursusRepository extends CursusRepository {
       return Result.Error(e);
     }
   }
+
+  async count(params: CursusParams): Promise<number> {
+    const queryBuilder = this.cursusRepo.createQueryBuilder("cursus");
+    this.cursusFilter.totalCount(queryBuilder, params);
+
+    const count = await queryBuilder.getCount();
+
+    return count || 0;
+  }
 }

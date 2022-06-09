@@ -108,4 +108,13 @@ export class PsqlModuleRepository extends ModuleRepository {
     }
     return Option.Some(this.moduleEntityMapper.entitiesToApis(result));
   }
+
+  async count(params: ModuleParams): Promise<number> {
+    const queryBuilder = this.moduleRepo.createQueryBuilder("module");
+    this.moduleFilter.totalCount(queryBuilder, params);
+
+    const count = await queryBuilder.getCount();
+
+    return count || 0;
+  }
 }
