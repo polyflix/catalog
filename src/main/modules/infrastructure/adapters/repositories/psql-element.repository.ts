@@ -38,8 +38,7 @@ export class PsqlElementRepository extends ElementRepository {
     this.logger.log(`Update a element with id ${element.id}`);
 
     try {
-      await this.elementRepo.update(
-        elementId,
+      await this.elementRepo.save(
         this.elementEntityMapper.apiToEntity(element)
       );
       return Option.Some(element);

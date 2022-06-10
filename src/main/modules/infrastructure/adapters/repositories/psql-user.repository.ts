@@ -33,10 +33,7 @@ export class PsqlUserRepository extends UserRepository {
     this.logger.log(`Update a user with id ${user.id}`);
 
     try {
-      await this.userRepo.update(
-        userId,
-        this.userEntityMapper.apiToEntity(user)
-      );
+      await this.userRepo.save(this.userEntityMapper.apiToEntity(user));
       return Option.Some(user);
     } catch (e) {
       this.logger.warn(`Cannot update user with id ${user.id}. Error: ${e}`);
