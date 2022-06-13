@@ -79,7 +79,6 @@ export class ModuleController {
     @Param("slug") slug: string,
     @Body() body: UpdateModuleDto
   ): Promise<ModuleResponse> {
-    //TODO later: check order
     this.logger.log(
       `PUT /modules/${slug} received body: ${JSON.stringify(body)}`
     );
@@ -138,7 +137,7 @@ export class ModuleController {
     if (isAdmin) return true;
 
     // Get the entity in order to check if the user can update it.
-    const entity: Module = await this.moduleService.findOne(slug);
+    const entity: Module = await this.moduleService.findOne(slug, userId);
 
     // if the user is not the creator of the resource
     if (entity.user.id !== userId) {

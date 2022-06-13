@@ -21,7 +21,9 @@ export class PasswordEntity extends BaseEntity {
   @Column()
   moduleId: string;
 
-  @ManyToOne(() => ModuleEntity, (module) => module.passwords)
+  @ManyToOne(() => ModuleEntity, (module) => module.passwords, {
+    orphanedRowAction: "delete"
+  })
   module: ModuleEntity;
 
   @Expose()
