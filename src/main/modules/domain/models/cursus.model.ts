@@ -1,4 +1,5 @@
 import { Result } from "@swan-io/boxed";
+import { Visibility } from "src/main/constants/content.enum";
 import { CursusInvalidError } from "../errors/cursus-invalid.error";
 import { Course } from "./course.model";
 import { User } from "./user.model";
@@ -9,7 +10,8 @@ export class CursusProps {
   description: string;
   courses: Course[];
   user: User;
-  draft?: boolean;
+  visibility: Visibility;
+  draft: boolean;
 }
 
 export class Cursus {
@@ -19,6 +21,7 @@ export class Cursus {
     public description: string,
     public courses: Course[],
     public user: User,
+    public visibility: Visibility,
     public draft?: boolean,
     public id?: string
   ) {}
@@ -30,6 +33,7 @@ export class Cursus {
       props.description,
       props.courses,
       props.user,
+      props.visibility,
       props.draft
     );
 

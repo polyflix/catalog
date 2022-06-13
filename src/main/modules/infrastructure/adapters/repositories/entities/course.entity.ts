@@ -18,8 +18,7 @@ import { slugify } from "../../../../../core/helpers/slugify";
 @Entity("course")
 export class CourseEntity extends ContentEntity {
   @Column()
-  @MaxLength(64)
-  @MinLength(8)
+  @MaxLength(100)
   name: string;
 
   @Column({ unique: true })
@@ -27,12 +26,11 @@ export class CourseEntity extends ContentEntity {
   slug: string;
 
   @Column("text")
-  @MaxLength(256)
+  @MaxLength(512)
   @MinLength(1)
   description: string;
 
   @Column("text", { nullable: true })
-  @MinLength(1)
   content: string;
 
   @Column("uuid")

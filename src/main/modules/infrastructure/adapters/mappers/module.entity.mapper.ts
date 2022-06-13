@@ -29,7 +29,8 @@ export class ModuleEntityMapper extends AbstractMapper<ModuleEntity, Module> {
       visibility: entity.visibility,
       passwords: this.passwordEntityMapper.entitiesToApis(
         entity.passwords || []
-      )
+      ),
+      draft: entity.draft
     };
     const module = Module.create(moduleProps);
 

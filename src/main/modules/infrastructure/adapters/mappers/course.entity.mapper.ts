@@ -27,7 +27,9 @@ export class CourseEntityMapper extends AbstractMapper<CourseEntity, Course> {
       description: entity.description,
       content: entity.content,
       modules: this.moduleEntityMapper.entitiesToApis(entity.modules || []),
-      user: entity.user ? this.userEntityMapper.entityToApi(entity.user) : null
+      user: entity.user ? this.userEntityMapper.entityToApi(entity.user) : null,
+      visibility: entity.visibility,
+      draft: entity.draft
     };
 
     const course = Course.create(courseProps);

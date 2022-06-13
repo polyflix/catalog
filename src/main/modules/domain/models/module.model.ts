@@ -13,7 +13,7 @@ export class ModuleProps {
   visibility: Visibility;
   user: User;
   passwords?: Password[];
-  draft?: boolean;
+  draft: boolean;
 }
 
 export class ModuleToElement {

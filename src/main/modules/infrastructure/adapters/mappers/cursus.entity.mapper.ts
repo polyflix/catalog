@@ -26,7 +26,9 @@ export class CursusEntityMapper extends AbstractMapper<CursusEntity, Cursus> {
       slug: entity.slug,
       description: entity.description,
       courses: this.courseEntityMapper.entitiesToApis(entity.courses || []),
-      user: this.userEntityMapper.entityToApi(entity.user)
+      user: this.userEntityMapper.entityToApi(entity.user),
+      visibility: entity.visibility,
+      draft: entity.draft
     };
 
     const cursus = Cursus.create(cursusProps);
