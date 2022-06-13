@@ -9,6 +9,7 @@ export class CursusProps {
   description: string;
   courses: Course[];
   user: User;
+  draft?: boolean;
 }
 
 export class Cursus {
@@ -18,6 +19,7 @@ export class Cursus {
     public description: string,
     public courses: Course[],
     public user: User,
+    public draft?: boolean,
     public id?: string
   ) {}
 
@@ -27,7 +29,8 @@ export class Cursus {
       props.slug,
       props.description,
       props.courses,
-      props.user
+      props.user,
+      props.draft
     );
 
     return cursus.validate().match({

@@ -13,6 +13,7 @@ export class ModuleProps {
   visibility: Visibility;
   user: User;
   passwords?: Password[];
+  draft?: boolean;
 }
 
 export class ModuleToElement {
@@ -29,6 +30,7 @@ export class Module {
     public user: User,
     public visibility: Visibility,
     public passwords?: Password[],
+    public draft?: boolean,
     public id?: string
   ) {}
 
@@ -40,7 +42,8 @@ export class Module {
       props.elements,
       props.user,
       props.visibility,
-      props.passwords
+      props.passwords,
+      props.draft
     );
 
     return module.validate().match({

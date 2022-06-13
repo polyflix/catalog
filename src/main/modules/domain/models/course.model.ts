@@ -10,6 +10,7 @@ export class CourseProps {
   content: string;
   modules: Module[];
   user: User;
+  draft?: boolean;
 }
 
 export class Course {
@@ -20,6 +21,7 @@ export class Course {
     public content: string,
     public modules: Module[],
     public user: User,
+    public draft?: boolean,
     public id?: string
   ) {}
 
@@ -30,7 +32,8 @@ export class Course {
       props.description,
       props.content,
       props.modules,
-      props.user
+      props.user,
+      props.draft
     );
 
     return course.validate().match({
