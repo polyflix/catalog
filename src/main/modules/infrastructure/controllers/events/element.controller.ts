@@ -6,6 +6,7 @@ import {
   TriggerType
 } from "@polyflix/x-utils";
 import {
+  KAFKA_ATTACHMENT_TOPIC,
   KAFKA_QUIZZ_TOPIC,
   KAFKA_VIDEO_TOPIC
 } from "src/main/constants/kafka.topics";
@@ -49,6 +50,27 @@ export class ElementController {
       `Recieve message from topic: ${KAFKA_QUIZZ_TOPIC} - trigger: ${message.trigger}`
     );
     message.payload.type = "quizz";
+    const element = this.elementApiMapper.apiToEntity(message.payload);
+
+    switch (message.trigger) {
+      case TriggerType.CREATE:
+        this.elementService.create(element);
+        break;
+      case TriggerType.UPDATE:
+        this.elementService.update(element);
+        break;
+      case TriggerType.DELETE:
+        this.elementService.delete(element);
+        break;
+    }
+  }
+
+  @EventPattern(KAFKA_ATTACHMENT_TOPIC)
+  async attachment(@Payload("value") message: PolyflixKafkaValue) {
+    this.logger.log(
+      `Recieve message from topic: ${KAFKA_ATTACHMENT_TOPIC} - trigger: ${message.trigger}`
+    );
+    message.payload.type = "attachment";
     const element = this.elementApiMapper.apiToEntity(message.payload);
 
     switch (message.trigger) {
