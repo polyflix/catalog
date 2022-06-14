@@ -57,9 +57,17 @@ export class CursusController {
   }
 
   @Get("/:slug")
-  async findOne(@Param("slug") slug: string): Promise<CursusResponse> {
+  async findOne(
+    @MeId() userId: string,
+    @IsAdmin() isAdmin: boolean,
+    @Param("slug") slug: string
+  ): Promise<CursusResponse> {
     this.logger.log(`GET /cursus/${slug} received`);
-    const cursus: Cursus = await this.cursusService.findOne(slug);
+    const cursus: Cursus = await this.cursusService.findOne(
+      slug,
+      userId,
+      isAdmin
+    );
     return this.cursusApiMapper.entityToApi(cursus);
   }
 
@@ -101,7 +109,7 @@ export class CursusController {
     // throw new NotFoundException();
     this.logger.log(`DELETE /cursus/${slug} received`);
     await this.canExecuteAction(slug, userId, isAdmin);
-    await this.cursusService.delete(slug);
+    await this.cursusService.delete(slug, userId, isAdmin);
   }
 
   /**
@@ -120,7 +128,11 @@ export class CursusController {
     if (isAdmin) return true;
 
     // Get the entity in order to check if the user can update it.
-    const entity: Cursus = await this.cursusService.findOne(slug);
+    const entity: Cursus = await this.cursusService.findOne(
+      slug,
+      userId,
+      isAdmin
+    );
 
     // if the user is not the creator of the resource
     if (entity.user.id !== userId) {

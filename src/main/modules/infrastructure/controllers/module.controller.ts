@@ -60,6 +60,7 @@ export class ModuleController {
   @Get("/:slug")
   async findOne(
     @MeId() userId: string,
+    @IsAdmin() isAdmin: boolean,
     @Param("slug") slug: string,
     @Query("accessKey") accessKey?: string
   ): Promise<ModuleResponse> {
@@ -67,6 +68,7 @@ export class ModuleController {
     const module: Module = await this.moduleService.findOne(
       slug,
       userId,
+      isAdmin,
       accessKey
     );
     return this.moduleApiMapper.entityToApi(module);
@@ -118,7 +120,7 @@ export class ModuleController {
     // throw new NotFoundException();
     this.logger.log(`DELETE /modules/${slug} received`);
     await this.canExecuteAction(slug, userId, isAdmin);
-    await this.moduleService.delete(slug);
+    await this.moduleService.delete(slug, userId, isAdmin);
   }
 
   /**
@@ -137,7 +139,11 @@ export class ModuleController {
     if (isAdmin) return true;
 
     // Get the entity in order to check if the user can update it.
-    const entity: Module = await this.moduleService.findOne(slug, userId);
+    const entity: Module = await this.moduleService.findOne(
+      slug,
+      userId,
+      isAdmin
+    );
 
     // if the user is not the creator of the resource
     if (entity.user.id !== userId) {

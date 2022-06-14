@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
   Logger,
   NotFoundException,
@@ -27,6 +28,7 @@ import {
 } from "@polyflix/x-utils";
 import { ClientKafka } from "@nestjs/microservices";
 import { KAFKA_CURSUS_TOPIC } from "../../../constants/kafka.topics";
+import { Visibility } from "src/main/constants/content.enum";
 
 @Injectable()
 export class CursusService {
@@ -96,11 +98,23 @@ export class CursusService {
     });
   }
 
-  async findOne(slug: string): Promise<Cursus> {
+  async findOne(
+    slug: string,
+    userId: string,
+    isAdmin: boolean
+  ): Promise<Cursus> {
     const model = await this.psqlCursusRepository.findOne(slug);
 
     return model.match({
-      Some: (value: Cursus) => value,
+      Some: (value: Cursus) => {
+        const isCreator = value.user.id === userId;
+        if (value.visibility === Visibility.PRIVATE && !isCreator && !isAdmin) {
+          throw new ForbiddenException(
+            "The cursus is private, you can't access it"
+          );
+        }
+        return value;
+      },
       None: () => {
         null;
         const error = "Cursus not found";
@@ -146,9 +160,9 @@ export class CursusService {
     });
   }
 
-  async delete(slug: string) {
+  async delete(slug: string, userId: string, isAdmin: boolean) {
     const model = await this.psqlCursusRepository.delete(
-      await this.findOne(slug)
+      await this.findOne(slug, userId, isAdmin)
     );
 
     return model.match({

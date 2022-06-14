@@ -123,7 +123,8 @@ export class ModuleService {
 
   async findOne(
     slug: string,
-    userId?: string,
+    userId: string,
+    isAdmin: boolean,
     accessKey?: string
   ): Promise<Module> {
     const model = await this.psqlModuleRepository.findOne(slug);
@@ -133,9 +134,18 @@ export class ModuleService {
         const isCreator = module.user.id === userId;
 
         // If the user is not the creator, we check if the user has the right to see the module
+        if (
+          module.visibility === Visibility.PRIVATE &&
+          !isCreator &&
+          !isAdmin
+        ) {
+          throw new ForbiddenException(
+            "The module is private, you can't access it"
+          );
+        }
         if (module.visibility === Visibility.PROTECTED && !isCreator) {
           if (!accessKey) {
-            throw new BadRequestException(
+            throw new ForbiddenException(
               "The module is protected, you need an access key in order to access it"
             );
           }
@@ -220,9 +230,9 @@ export class ModuleService {
     });
   }
 
-  async delete(slug: string) {
+  async delete(slug: string, userId: string, isAdmin: boolean) {
     const model = await this.psqlModuleRepository.delete(
-      await this.findOne(slug)
+      await this.findOne(slug, userId, isAdmin)
     );
 
     return model.match({
