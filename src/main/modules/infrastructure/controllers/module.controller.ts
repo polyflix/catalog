@@ -24,7 +24,7 @@ import {
   UpdateModuleDto
 } from "../../application/dto/module.dto";
 import { ModuleApiMapper } from "../adapters/mappers/module.api.mapper";
-import { MeId, IsAdmin } from "@polyflix/x-utils";
+import { MeId, IsAdmin, MeRoles, Role } from "@polyflix/x-utils";
 import { Paginate } from "src/main/core/types/pagination.type";
 
 @ApiTags("Module")
@@ -94,9 +94,16 @@ export class ModuleController {
   @ApiResponse({ type: ModuleResponse })
   async create(
     @MeId() userId: string,
+    @MeRoles() userRoles: Role[],
     @Body() body: CreateModuleDto
   ): Promise<ModuleResponse> {
     this.logger.log(`POST /modules received body: ${JSON.stringify(body)}`);
+    if (
+      !userRoles.includes(Role.Admin) &&
+      !userRoles.includes(Role.Contributor)
+    ) {
+      throw new ForbiddenException("You are not authorized to create modules");
+    }
     if (body.elements) {
       const elementOrders = body.elements.map((i) => i.order);
       if (

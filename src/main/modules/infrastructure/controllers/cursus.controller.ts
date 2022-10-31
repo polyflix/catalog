@@ -14,7 +14,7 @@ import {
   ValidationPipe
 } from "@nestjs/common";
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
-import { IsAdmin, MeId } from "@polyflix/x-utils";
+import { IsAdmin, MeId, MeRoles, Role } from "@polyflix/x-utils";
 import { Paginate } from "src/main/core/types/pagination.type";
 import {
   CursusResponse,
@@ -91,9 +91,16 @@ export class CursusController {
   @ApiResponse({ type: CursusResponse })
   async create(
     @MeId() userId: string,
+    @MeRoles() userRoles: Role[],
     @Body() body: CreateCursusDto
   ): Promise<CursusResponse> {
     this.logger.log(`POST /cursus received body: ${JSON.stringify(body)}`);
+    if (
+      !userRoles.includes(Role.Admin) &&
+      !userRoles.includes(Role.Contributor)
+    ) {
+      throw new ForbiddenException("You are not authorized to create cursus");
+    }
     const cursus: Cursus = await this.cursusService.create(userId, body);
     this.logger.log(`Successfully created cursus ${cursus.slug}`);
     return this.cursusApiMapper.entityToApi(cursus);
