@@ -26,7 +26,7 @@ async function bootstrap() {
 
   app.enableVersioning({
     type: VersioningType.URI,
-    defaultVersion: "2.0.0"
+    defaultVersion: "3"
   });
 
   app.useGlobalPipes(new ValidationPipe());
@@ -34,7 +34,7 @@ async function bootstrap() {
   const configOpenApi = new DocumentBuilder()
     .setTitle("Polyflix Catalog service API")
     .setDescription("Polyflix Catalog service API OpenAPI document.")
-    .setVersion("2.0.0")
+    .setVersion("3")
     .addBearerAuth()
     .build();
 

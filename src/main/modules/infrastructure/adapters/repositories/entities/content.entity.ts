@@ -5,7 +5,4 @@ import { BaseEntity } from "./base.entity";
 export class ContentEntity extends BaseEntity {
   @Column({ enum: Visibility, type: "enum", default: Visibility.PUBLIC })
   visibility?: Visibility;
-
-  @Column({ default: false })
-  draft?: boolean;
 }

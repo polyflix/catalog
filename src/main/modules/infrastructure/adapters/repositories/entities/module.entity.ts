@@ -1,39 +1,20 @@
 import {
-  BeforeInsert,
-  BeforeUpdate,
   Column,
   Entity,
-  Index,
+  PrimaryGeneratedColumn,
   ManyToMany,
-  ManyToOne,
   OneToMany
 } from "typeorm";
-import { ContentEntity } from "./content.entity";
 import { CourseEntity } from "./course.entity";
-import { UserEntity } from "./user.entity";
 import { ModuleToElementEntity } from "./moduleToElement.entity";
-import { slugify } from "../../../../../core/helpers/slugify";
-import { PasswordEntity } from "./password.entity";
 
 @Entity("module")
-export class ModuleEntity extends ContentEntity {
+export class ModuleEntity {
+  @PrimaryGeneratedColumn("uuid")
+  id?: string;
+
   @Column()
-  name: string;
-
-  @Column({ unique: true })
-  @Index()
-  slug: string;
-
-  @Column("text")
-  description: string;
-
-  @ManyToOne(() => UserEntity, (user) => user.modules, {
-    eager: true
-  })
-  user?: UserEntity;
-
-  @Column("uuid")
-  userId?: string;
+  title: string;
 
   @ManyToMany(() => CourseEntity, (course) => course.modules)
   courses?: CourseEntity[];
@@ -42,13 +23,4 @@ export class ModuleEntity extends ContentEntity {
     cascade: true
   })
   elements: ModuleToElementEntity[];
-
-  @BeforeInsert()
-  @BeforeUpdate()
-  generateSlug() {
-    this.slug = slugify(this.name);
-  }
-
-  @OneToMany(() => PasswordEntity, (password) => password.module)
-  passwords?: PasswordEntity[];
 }

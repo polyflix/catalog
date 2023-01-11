@@ -35,19 +35,16 @@ export class CourseResponse {
   visibility: string;
 
   @ApiProperty()
-  draft: boolean;
+  title: string;
 
-  @ApiProperty()
-  name: string;
-
-  @ApiProperty()
-  slug: string;
+  // @ApiProperty()
+  // slug: string;
 
   @ApiProperty()
   description: string;
 
-  @ApiProperty()
-  content: string;
+  // @ApiProperty()
+  // content: string;
 
   @ApiProperty()
   modules: ModuleResponse;

@@ -19,7 +19,7 @@ import { slugify } from "../../../../../core/helpers/slugify";
 export class CourseEntity extends ContentEntity {
   @Column()
   @MaxLength(100)
-  name: string;
+  title: string;
 
   @Column({ unique: true })
   @Index()
@@ -36,23 +36,15 @@ export class CourseEntity extends ContentEntity {
   @Column("uuid")
   userId?: string;
 
-  @ManyToOne(() => UserEntity, (user) => user.courses, {
-    eager: true
-  })
-  user?: UserEntity;
-
   @ManyToMany(() => ModuleEntity, (module) => module.courses, {
     eager: true
   })
   @JoinTable()
   modules?: ModuleEntity[];
 
-  @ManyToMany(() => CursusEntity, (cursus) => cursus.courses)
-  cursus?: CursusEntity[];
-
   @BeforeInsert()
   @BeforeUpdate()
   generateSlug() {
-    this.slug = slugify(this.name);
+    this.slug = slugify(this.title);
   }
 }
