@@ -39,12 +39,12 @@ function loadConfig(
 }
 
 export const ISLOCAL =
-  process.env.NEST_PROFILE == "local" || !process.env.NEST_PROFILE;
+  process.env.NEST_PROFILE == "dev" || !process.env.NEST_PROFILE;
 
 export const loadConfiguration = (logger: LoggerService) => {
   let config = {};
 
-  const activeProfile = process.env.NEST_PROFILE || "local";
+  const activeProfile = process.env.NEST_PROFILE || "dev";
   const defaultConfigurationFiles = [
     `${CONFIG_COMMON_FILE_NAME}.${CONFIG_FILE_EXTENSION}`,
     `${CONFIG_COMMON_FILE_NAME}.${activeProfile}.${CONFIG_FILE_EXTENSION}`
