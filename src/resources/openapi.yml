@@ -225,7 +225,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CourseBase"
+              $ref: "#/components/schemas/CourseUpdateBody"
       responses:
         "200":
           description: "Returns the updated course"
@@ -355,6 +355,42 @@ paths:
           $ref: "#/components/responses/InternalServerError"
 components:
   schemas:
+    SectionBase:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Can be empty
+        elements:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+                enum:
+                  - VIDEO
+                  - QUIZ
+                  - PAGE
+                  # - ATTACHMENT # TODO
+              id:
+                type: string
+              order:
+                type: integer
+            required:
+              - type
+              - id
+              - order
+      required:
+        - title
+        - elements
+    Section:
+      allOf:
+        - $ref: "#/components/schemas/SectionBase"
+        - properties:
+            id:
+              type: string
+              description: The id is only required if the section is updated
     CourseBase:
       type: object
       properties:
@@ -371,34 +407,7 @@ components:
         sections:
           type: array
           items:
-            type: object
-            properties:
-              title:
-                type: string
-                description: Can be empty
-              elements:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    type:
-                      type: string
-                      enum:
-                        - VIDEO
-                        - QUIZ
-                        - PAGE
-                        # - ATTACHMENT # TODO
-                    id:
-                      type: string
-                    order:
-                      type: integer
-                  required:
-                    - type
-                    - id
-                    - order
-            required:
-              - title
-              - elements
+            $ref: "#/components/schemas/SectionBase"
       required:
         - title
         - description
@@ -408,6 +417,10 @@ components:
       allOf:
         - $ref: "#/components/schemas/CourseBase"
         - properties:
+            sections:
+              type: array
+              items:
+                $ref: "#/components/schemas/Section"
             id:
               type: string
             userId:
@@ -424,6 +437,14 @@ components:
             - userId
             - createdAt
             - updatedAt
+    CourseUpdateBody:
+      allOf:
+        - $ref: "#/components/schemas/CourseBase"
+        - properties:
+            sections:
+              type: array
+              items:
+                $ref: "#/components/schemas/Section"
     PageBase:
       type: object
       properties:
