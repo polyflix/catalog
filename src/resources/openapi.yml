@@ -1,0 +1,517 @@
+openapi: 3.0.0
+info:
+  title: Polyflix Catalog service API
+  description: Polyflix Catalog service OpenAPI specification
+  version: "3"
+tags:
+  - name: Course
+    description: An entity that contains a title, a short description and sections of elements (videos, quizzes or pages)
+  - name: Page
+    description: An entity that contains a title and a Markdown content
+  - name: HealthCheck
+paths:
+  /v3/health:
+    get:
+      tags:
+        - HealthCheck
+      responses:
+        "200":
+          description: The Health Check is successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  info:
+                    type: object
+                    example:
+                      database:
+                        status: up
+                    additionalProperties:
+                      type: object
+                      properties:
+                        status:
+                          type: string
+                      additionalProperties:
+                        type: string
+                    nullable: true
+                  error:
+                    type: object
+                    additionalProperties:
+                      type: object
+                      properties:
+                        status:
+                          type: string
+                      additionalProperties:
+                        type: string
+                    nullable: true
+                  details:
+                    type: object
+                    example:
+                      database:
+                        status: up
+                    additionalProperties:
+                      type: object
+                      properties:
+                        status:
+                          type: string
+                      additionalProperties:
+                        type: string
+        "503":
+          description: The Health Check is not successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: error
+                  info:
+                    type: object
+                    example:
+                      database:
+                        status: up
+                    additionalProperties:
+                      type: object
+                      properties:
+                        status:
+                          type: string
+                      additionalProperties:
+                        type: string
+                    nullable: true
+                  error:
+                    type: object
+                    example:
+                      redis:
+                        status: down
+                        message: Could not connect
+                    additionalProperties:
+                      type: object
+                      properties:
+                        status:
+                          type: string
+                      additionalProperties:
+                        type: string
+                    nullable: true
+                  details:
+                    type: object
+                    example:
+                      database:
+                        status: up
+                      redis:
+                        status: down
+                        message: Could not connect
+                    additionalProperties:
+                      type: object
+                      properties:
+                        status:
+                          type: string
+                      additionalProperties:
+                        type: string
+  /v3/courses:
+    get:
+      tags:
+        - Course
+      summary: Get all courses (paginated, can be filtered by visibility and user ID)
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: pageSize
+          in: query
+          schema:
+            type: integer
+            default: 10
+        - name: visibility
+          in: query
+          schema:
+            type: string
+            enum:
+              - PUBLIC
+              - PRIVATE
+              - PROTECTED
+            default: PUBLIC
+        - name: userId
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Returns a paginated list of courses"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Course"
+                  total:
+                    type: integer
+                    description: Total number of courses
+                  page:
+                    type: integer
+                    description: Current page
+                  pageSize:
+                    type: integer
+                    description: Number of courses per page
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    post:
+      tags:
+        - Course
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CourseBase"
+      responses:
+        "201":
+          description: "Returns the created course, with its ID"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Course"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v3/courses/{id}:
+    get:
+      tags:
+        - Course
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Returns the course with the given ID"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Course"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    put:
+      tags:
+        - Course
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CourseUpdateBody"
+      responses:
+        "200":
+          description: "Returns the updated course"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Course"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    delete:
+      tags:
+        - Course
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "204":
+          description: "The course has been deleted"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v3/pages:
+    post:
+      tags:
+        - Page
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PageBase"
+      responses:
+        "201":
+          description: "Returns the created page, with its ID"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Page"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v3/pages/{id}:
+    get:
+      tags:
+        - Page
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Returns the page with the given ID"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Page"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    put:
+      tags:
+        - Page
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PageBase"
+      responses:
+        "200":
+          description: "Returns the updated page"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Page"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    delete:
+      tags:
+        - Page
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "204":
+          description: "The page has been deleted"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+components:
+  schemas:
+    SectionBase:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Can be empty
+        elements:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+                enum:
+                  - VIDEO
+                  - QUIZ
+                  - PAGE
+                  # - ATTACHMENT # TODO
+              id:
+                type: string
+              order:
+                type: integer
+            required:
+              - type
+              - id
+              - order
+      required:
+        - title
+        - elements
+    Section:
+      allOf:
+        - $ref: "#/components/schemas/SectionBase"
+        - properties:
+            id:
+              type: string
+              description: The id is only required if the section is updated
+    CourseBase:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        visibility:
+          type: string
+          enum:
+            - PUBLIC
+            - PRIVATE
+            - PROTECTED
+        sections:
+          type: array
+          items:
+            $ref: "#/components/schemas/SectionBase"
+      required:
+        - title
+        - description
+        - visibility
+        - sections
+    Course:
+      allOf:
+        - $ref: "#/components/schemas/CourseBase"
+        - properties:
+            sections:
+              type: array
+              items:
+                $ref: "#/components/schemas/Section"
+            id:
+              type: string
+            userId:
+              type: string
+              description: The ID of the author of this course
+            createdAt:
+              format: date-time
+              type: string
+            updatedAt:
+              format: date-time
+              type: string
+          required:
+            - id
+            - userId
+            - createdAt
+            - updatedAt
+    CourseUpdateBody:
+      allOf:
+        - $ref: "#/components/schemas/CourseBase"
+        - properties:
+            sections:
+              type: array
+              items:
+                $ref: "#/components/schemas/Section"
+    PageBase:
+      type: object
+      properties:
+        title:
+          type: string
+        content:
+          type: string
+      required:
+        - title
+        - content
+    Page:
+      allOf:
+        - $ref: "#/components/schemas/PageBase"
+        - properties:
+            id:
+              type: string
+            userId:
+              type: string
+              description: The ID of the author of this page
+            createdAt:
+              format: date-time
+              type: string
+            updatedAt:
+              format: date-time
+              type: string
+      required:
+        - id
+        - userId
+        - createdAt
+        - updatedAt
+    Exception:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          description: The HTTP status code
+        message:
+          type: string
+          description: The HTTP status message
+        error:
+          type: string
+          description: Optional, explains the error for debug purposes
+      required:
+        - statusCode
+        - message
+  responses:
+    Forbidden:
+      description: Access to resource is forbidden
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Exception"
+    NotFound:
+      description: The resource was not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Exception"
+    BadRequest:
+      description: Bad request (invalid parameters or body)
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Exception"
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Exception"
